@@ -67,6 +67,15 @@ def main() -> int:
         finally:
             fcntl.flock(fd2, fcntl.LOCK_UN)
             os.close(fd2)
+    # Write per-job health back into registry.yaml (last_status /
+    # consecutive_errors / last_run_at). Best-effort; never fails the run.
+    if args.status in ("ok", "error"):
+        try:
+            sys.path.insert(0, str(CRONHUB / "bin"))
+            import health_writeback
+            health_writeback.writeback(args.job_id, args.status)
+        except Exception:
+            pass
     return 0
 
 if __name__ == "__main__":

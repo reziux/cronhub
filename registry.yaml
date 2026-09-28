@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "'2026-08-21T22:57:45Z'"
-updated_at: "2026-09-28T16:00:02Z"
+updated_at: "2026-09-28T17:00:01Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -17,9 +17,10 @@ jobs:
     discord_channel: 1467623733345910864
     tags: []
     source: openclaw.cron.json
-    last_status: unknown
+    last_status: ok
     consecutive_errors: 0
     description: "'Job: Cron Deduplicator.'"
+    last_run_at: "2026-09-28T16:56:37Z"
 
   - id: "e26526cd-f7f0-4841-a2a1-4f8b70f9771d"
     name: Daily Usage Stats
