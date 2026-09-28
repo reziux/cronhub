@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "''2026-08-21T22:57:45Z''"
-updated_at: "2026-09-28T21:00:02Z"
+updated_at: "2026-09-28T22:00:01Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -291,7 +291,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "''Every 6h: refreshes the local tool/inventory index.''"
-    last_run_at: "2026-09-28T20:30:09Z"
+    last_run_at: "2026-09-28T21:30:09Z"
 
   - id: "7b6ca6c9-683b-4b22-863c-2b6a86f10cf2"
     name: "linkedin-blade-mode"
@@ -610,7 +610,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "Bluesky capture monitor — emits the latest summary if there's new content"
-    last_run_at: "2026-09-28T20:30:04Z"
+    last_run_at: "2026-09-28T21:30:04Z"
 
   - id: 125a2c5aa052
     name: OpenRent Rental Radar
@@ -1257,7 +1257,7 @@ jobs:
     description: "''Job: AI News Aggregator.''"
     log_jobname_hint: "ai-news-aggregator"
     log_file: "/home/reziux/.openclaw/workspace/data/ai-news/logs/cron.log"
-    last_run_at: "2026-09-28T17:17:52Z"
+    last_run_at: "2026-09-28T21:23:29Z"
 
   - id: "syscron-8747ee46"
     name: YouTube Discourse
@@ -2276,6 +2276,23 @@ jobs:
     tz: Europe/London
     is_llm_turn: false
     owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/minimax-m31-monitor-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-dfeb733e"
+    name: "cronhub-rotate-runs.sh"
+    enabled: true
+    schedule_expr: "17 6 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/cronhub-record.sh crh-rotate-runs -- bash /mnt/data/cronhub/bin/cronhub-rotate-runs.sh"
     primary_executor: "system-cron"
     backup_executor: "openclaw-cron"
     fallback_strategy: "run-anyway"
