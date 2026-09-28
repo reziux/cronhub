@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# cronhub-test-runs — operator shim for /mnt/data/cronhub/bin/test-runs.py
+set -u
+CRONHUB="${CRONHUB:-/mnt/data/cronhub}"
+exec python3 "$CRONHUB/bin/test-runs.py" "$@"

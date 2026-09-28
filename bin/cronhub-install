@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# cronhub-install — install cronhub's drift-detection, auditor, and rotation hooks
+# into the user's actual crontab (idempotent).
+#
+# Added lines (idempotent — these comments are unique markers):
+#   * * * * *   bash /mnt/data/cronhub/bin/arbiter.sh
+#   */30 * * * *  bash /mnt/data/cronhub/bin/cronhub-auditor.sh
+#   0 * * * *   python3 /mnt/data/cronhub/bin/add_live_system_cron.py
+#   0 6 * * *   bash /mnt/data/cronhub/bin/cronhub-rotate-alerts.sh
+set -u
+
+CRONHUB="${CRONHUB:-/mnt/data/cronhub}"
+USER="${CRON_USER:-${USER:-reziux}}"
+MARKER_BEGIN="# >>> cronhub-install BEGIN >>>"
+MARKER_END="# <<< cronhub-install END <<<"
+
+# Compose the block to inject
+read -r -d '' BLOCK <<EOF
+$MARKER_BEGIN
+* * * * * bash $CRONHUB/bin/arbiter.sh
+*/30 * * * * bash $CRONHUB/bin/cronhub-auditor.sh
+* * * * * bash $CRONHUB/bin/cronhub-alerts-relay
+0 * * * * python3 $CRONHUB/bin/add_live_system_cron.py
+0 6 * * * bash $CRONHUB/bin/cronhub-rotate-alerts.sh
+5 6 * * * bash $CRONHUB/bin/cronhub-rotate-baks.sh
+$MARKER_END
+EOF
+
+# Read existing crontab
+existing=$(crontab -u "$USER" -l 2>/dev/null || true)
+
+# If already installed, replace the existing marker block with the latest one
+# (idempotent: re-runs are always safe and pick up new entries).
+if echo "$existing" | grep -qF "$MARKER_BEGIN"; then
+    # Strip everything from MARKER_BEGIN through MARKER_END inclusive
+    existing=$(printf '%s\n' "$existing" | awk -v beg="$MARKER_BEGIN" -v end="$MARKER_END" '
+        $0 == beg { in_block = 1; next }
+        $0 == end { in_block = 0; next }
+        !in_block { print }
+    ')
+fi
+
+if [ -z "$existing$BLOCK" ]; then
+    echo "cronhub-install: nothing to install"
+    exit 0
+fi
+
+new_cron="${existing}
+${BLOCK}
+"
+echo "$new_cron" | crontab -u "$USER" -
+echo "cronhub-install: installed 5 cron lines for $USER"
+crontab -u "$USER" -l | grep -A6 "$MARKER_BEGIN"
+exit 0
+
+new_cron="${existing}
+${BLOCK}
+"
+echo "$new_cron" | crontab -u "$USER" -
+echo "cronhub-install: installed 4 cron lines for $USER"
+crontab -u "$USER" -l | grep -A6 "$MARKER_BEGIN"

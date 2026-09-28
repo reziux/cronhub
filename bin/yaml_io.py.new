@@ -1,0 +1,192 @@
+"""Hand-rolled YAML I/O for cronhub registry.
+
+Avoids pyyaml dependency. Supports:
+  - top-level scalars (str, int, bool)
+  - list of dicts (the only nested structure we use)
+  - two list-item indentation styles: 0-space dash (`- id:`) and 2-space dash (`  - id:`)
+
+Defensive: escapes anything YAML could misinterpret; preserves special
+characters via quoting. Round-trip safe for our schema.
+"""
+from __future__ import annotations
+from pathlib import Path
+from typing import Any
+
+# Characters that force quoting (YAML reserved or whitespace)
+_SPECIAL_CHARS = set(":#\"'\n[]{})&*!|>,%@`?,-")
+
+
+def _emit_scalar(v: Any) -> str:
+    # bool MUST be checked before int (bool is a subclass of int)
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    if isinstance(v, int):
+        return str(v)
+    if isinstance(v, list):
+        if not v:
+            return "[]"
+        return "[" + ", ".join(_emit_scalar(x) for x in v) + "]"
+    s = str(v)
+    if not s:
+        return '""'
+    # Quote anything that could be misinterpreted as YAML syntax or contains
+    # whitespace that would change the parse tree. We over-quote intentionally.
+    if any(c in _SPECIAL_CHARS for c in s) or s != s.strip() or s.lower() in {"true", "false", "null", "yes", "no"}:
+        # Escape newlines too: an unescaped newline inside a quoted scalar
+        # corrupts the document and allows injection of phantom list items.
+        return '"' + s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n') + '"'
+    return s
+
+
+def write(path: Path, doc: dict) -> None:
+    """Write doc as YAML. Stable ordering: keys are emitted in insertion order."""
+    lines = []
+    for k, v in doc.items():
+        if isinstance(v, list) and v and isinstance(v[0], dict):
+            lines.append(f"{_emit_scalar(k)}:")
+            for item in v:
+                first = True
+                for ik, iv in item.items():
+                    prefix = "  - " if first else "    "
+                    lines.append(f"{prefix}{_emit_scalar(ik)}: {_emit_scalar(iv)}")
+                    first = False
+                lines.append("")
+        else:
+            lines.append(f"{_emit_scalar(k)}: {_emit_scalar(v)}")
+    path.write_text("\n".join(lines) + "\n")
+
+
+def _parse_scalar(s: str) -> Any:
+    s = s.strip()
+    if not s:
+        return ""
+    if s.startswith('"') and s.endswith('"'):
+        # handle escaped backslash and quote
+        body = s[1:-1]
+        out = []
+        i = 0
+        while i < len(body):
+            if body[i] == "\\" and i + 1 < len(body):
+                nxt = body[i+1]
+                out.append("\n" if nxt == "n" else nxt)
+                i += 2
+            else:
+                out.append(body[i])
+                i += 1
+        return "".join(out)
+    if s == "true":
+        return True
+    if s == "false":
+        return False
+    if s in ("null", "~"):
+        return None
+    if s.startswith("[") and s.endswith("]"):
+        inner = s[1:-1].strip()
+        if not inner:
+            return []
+        return [_parse_scalar(x.strip()) for x in _split_list(inner)]
+    try:
+        return int(s)
+    except ValueError:
+        return s
+
+
+def _split_list(s: str) -> list[str]:
+    parts, buf, depth, in_str, escape = [], [], 0, False, False
+    for c in s:
+        if escape:
+            buf.append(c); escape = False; continue
+        if in_str:
+            if c == "\\":
+                escape = True
+            elif c == '"':
+                in_str = False
+            buf.append(c)
+            continue
+        if c == '"':
+            in_str = True; buf.append(c)
+        elif c in '[{':
+            depth += 1; buf.append(c)
+        elif c in ']}':
+            depth -= 1; buf.append(c)
+        elif c == ',' and depth == 0:
+            parts.append("".join(buf)); buf = []
+        else:
+            buf.append(c)
+    if buf:
+        parts.append("".join(buf))
+    return parts
+
+
+def read(path: Path) -> dict:
+    """Parse a YAML doc with our two-line indentation conventions.
+
+    Supports both styles:
+      jobs:
+      - id: foo       (0-space dash)
+        name: bar
+      ---
+      jobs:
+        - id: foo     (2-space dash)
+          name: bar
+
+    Detection rule: a line whose left-stripped form begins with `- ` is a
+    list-item boundary. A subsequent line that's *more indented than the
+    dash* is a sub-key of that item.
+    """
+    text = path.read_text()
+    lines = text.splitlines()
+    out: dict = {}
+    cur_key: str | None = None
+    cur_list: list | None = None
+    cur_item: dict | None = None
+    item_indent: int = -1  # indent of the dash, used to classify sub-lines
+
+    def _classify(raw: str) -> tuple[int, str]:
+        stripped = raw.lstrip()
+        indent = len(raw) - len(stripped)
+        return indent, stripped
+
+    for raw in lines:
+        if not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        indent, stripped = _classify(raw)
+        # End of current item if we're at-or-below the dash indent and there's
+        # already a cur_item open and this line is non-dash.
+        if (
+            cur_item is not None
+            and not stripped.startswith("- ")
+            and indent <= item_indent
+            and ":" in stripped
+        ):
+            # Promotion to top-level key
+            k, _, v = stripped.partition(":")
+            k = k.strip(); v = v.strip()
+            out[k] = _parse_scalar(v) if v else ""
+            cur_key = k; cur_list = None; cur_item = None; item_indent = -1
+            continue
+        if indent == 0 and ":" in stripped and not stripped.startswith("-"):
+            k, _, v = stripped.partition(":")
+            k = k.strip(); v = v.strip()
+            if v == "":
+                cur_key = k
+                cur_list = []
+                out[k] = cur_list
+                cur_item = None
+                item_indent = -1
+            else:
+                out[k] = _parse_scalar(v)
+                cur_key = None; cur_list = None; cur_item = None; item_indent = -1
+        elif stripped.startswith("- ") and cur_list is not None:
+            # new list item
+            _, _, rest = stripped.partition("- ")
+            k, _, v = rest.partition(":")
+            cur_item = {_parse_scalar(k.strip()): _parse_scalar(v.strip()) if v.strip() else ""}
+            cur_list.append(cur_item)
+            item_indent = indent
+        elif ":" in stripped and cur_item is not None and indent > item_indent:
+            # sub-key of current item
+            k, _, v = stripped.partition(":")
+            cur_item[_parse_scalar(k.strip())] = _parse_scalar(v.strip()) if v.strip() else ""
+        # else: silently skip — should not happen for our schema
+    return out

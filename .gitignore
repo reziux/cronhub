@@ -1,0 +1,27 @@
+# Runtime state — never commit these
+logs/
+state/
+runs/
+alerts/
+audits/
+claims/
+locks/
+
+# Backups and temp files
+*.bak
+*.bak-*
+*.tmp
+*.hash
+*.hash2
+
+# Local-only config (operator sets manually)
+config/alerts.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db

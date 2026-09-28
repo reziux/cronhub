@@ -1,0 +1,156 @@
+"""Hand-rolled YAML I/O for cronhub registry.
+Avoids pyyaml dependency. Supports:
+  - top-level scalars (str, int, bool)
+  - list of dicts (the only nested structure we use)
+  - quoted/unquoted strings, lists, booleans, ints
+
+Defensive: escapes anything that YAML could misinterpret; preserves special
+characters via quoting. Round-trip safe for our schema.
+"""
+from __future__ import annotations
+from pathlib import Path
+from typing import Any
+
+
+# Characters that force quoting (YAML reserved or whitespace)
+_SPECIAL_CHARS = set(":#\"'\n[]{}&*!|>,%@`?,-")
+
+
+def _emit_scalar(v: Any) -> str:
+    # bool MUST be checked before int (bool is a subclass of int)
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    if isinstance(v, int):
+        return str(v)
+    if isinstance(v, list):
+        if not v:
+            return "[]"
+        return "[" + ", ".join(_emit_scalar(x) for x in v) + "]"
+    s = str(v)
+    if not s:
+        return '""'
+    # Quote anything that could be misinterpreted as YAML syntax or contains
+    # whitespace that would change the parse tree. We over-quote intentionally.
+    if any(c in _SPECIAL_CHARS for c in s) or s != s.strip() or s.lower() in {"true", "false", "null", "yes", "no"}:
+        # Escape newlines too: an unescaped newline inside a quoted scalar
+        # corrupts the document and allows injection of phantom list items.
+        return '"' + s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n') + '"'
+    return s
+
+
+def write(path: Path, doc: dict) -> None:
+    """Write doc as YAML. Stable ordering: keys are emitted in insertion order."""
+    lines = []
+    for k, v in doc.items():
+        if isinstance(v, list) and v and isinstance(v[0], dict):
+            lines.append(f"{_emit_scalar(k)}:")
+            for item in v:
+                first = True
+                for ik, iv in item.items():
+                    prefix = "  - " if first else "    "
+                    lines.append(f"{prefix}{_emit_scalar(ik)}: {_emit_scalar(iv)}")
+                    first = False
+                lines.append("")
+        else:
+            lines.append(f"{_emit_scalar(k)}: {_emit_scalar(v)}")
+    path.write_text("\n".join(lines) + "\n")
+
+
+def _parse_scalar(s: str) -> Any:
+    s = s.strip()
+    if not s:
+        return ""
+    if s.startswith('"') and s.endswith('"'):
+        # handle escaped backslash and quote
+        body = s[1:-1]
+        out = []
+        i = 0
+        while i < len(body):
+            if body[i] == "\\" and i + 1 < len(body):
+                nxt = body[i+1]
+                out.append("\n" if nxt == "n" else nxt)
+                i += 2
+            else:
+                out.append(body[i])
+                i += 1
+        return "".join(out)
+    if s == "true":
+        return True
+    if s == "false":
+        return False
+    if s in ("null", "~"):
+        return None
+    if s.startswith("[") and s.endswith("]"):
+        inner = s[1:-1].strip()
+        if not inner:
+            return []
+        return [_parse_scalar(x.strip()) for x in _split_list(inner)]
+    try:
+        return int(s)
+    except ValueError:
+        return s
+
+
+def _split_list(s: str) -> list[str]:
+    parts, buf, depth, in_str, escape = [], [], 0, False, False
+    for c in s:
+        if escape:
+            buf.append(c); escape = False; continue
+        if in_str:
+            if c == "\\":
+                escape = True
+            elif c == '"':
+                in_str = False
+            buf.append(c)
+            continue
+        if c == '"':
+            in_str = True; buf.append(c)
+        elif c in '[{':
+            depth += 1; buf.append(c)
+        elif c in ']}':
+            depth -= 1; buf.append(c)
+        elif c == ',' and depth == 0:
+            parts.append("".join(buf)); buf = []
+        else:
+            buf.append(c)
+    if buf:
+        parts.append("".join(buf))
+    return parts
+
+
+def read(path: Path) -> dict:
+    text = path.read_text()
+    lines = text.splitlines()
+    out: dict = {}
+    cur_key: str | None = None
+    cur_list: list | None = None
+    cur_item: dict | None = None
+    for raw in lines:
+        if not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        stripped = raw.lstrip()
+        indent = len(raw) - len(stripped)
+        if indent == 0 and ":" in stripped and not stripped.startswith("-"):
+            k, _, v = stripped.partition(":")
+            k = k.strip()
+            v = v.strip()
+            if v == "":
+                cur_key = k
+                cur_list = []
+                cur_item = None
+                out[k] = cur_list
+            else:
+                out[k] = _parse_scalar(v)
+                cur_key = None
+                cur_list = None
+                cur_item = None
+        elif indent == 2 and stripped.startswith("- ") and cur_list is not None:
+            _, _, rest = stripped.partition("- ")
+            # Split on first ':' to get key
+            k, _, v = rest.partition(":")
+            cur_item = {_parse_scalar(k.strip()): _parse_scalar(v.strip()) if v.strip() else ""}
+            cur_list.append(cur_item)
+        elif indent == 4 and ":" in stripped and cur_item is not None:
+            k, _, v = stripped.partition(":")
+            cur_item[_parse_scalar(k.strip())] = _parse_scalar(v.strip()) if v.strip() else ""
+    return out

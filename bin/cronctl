@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# cronctl — operator CLI shim for cronhub.
+# Resolves to bin/cronctl.py and forwards argv.
+set -u
+CRONHUB="${CRONHUB:-/mnt/data/cronhub}"
+exec python3 "$CRONHUB/bin/cronctl.py" "$@"

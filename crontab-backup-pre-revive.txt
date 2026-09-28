@@ -1,0 +1,73 @@
+
+# Grok jobs added
+0 1 * * * bash /home/reziux/.openclaw/workspace/scripts/grok-overnight.sh >> /home/reziux/.openclaw/workspace/logs/grok-overnight.log 2>&1
+0 2 * * * /home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/sentinel-grok-alert.js >> /home/reziux/.openclaw/workspace/logs/sentinel-grok-alert.log 2>&1
+0 3 * * * /home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/usage-monitor.js >> /home/reziux/.openclaw/workspace/logs/usage-monitor.log 2>&1
+
+# PIS Full Sync (OpenClaw integration) runs at 6am and 6pm
+0 6,18 * * * /home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/pis-full-sync.js >> /home/reziux/.openclaw/workspace/logs/pis-full-sync.log 2>&1
+
+# Shadow index enrichment runs at 7am
+0 7 * * * /home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/pis-shadow-enrich.js >> /home/reziux/.openclaw/workspace/logs/pis-shadow-enrich.log 2>&1
+0 4 * * * find /tmp -maxdepth 1 -name '.fe*.so' -mtime +1 -delete 2>/dev/null
+0 */4 * * * bash /home/reziux/.openclaw/workspace/scripts/daily-shadow-index.sh >> /home/reziux/.openclaw/workspace/logs/daily-shadow-index.log 2>&1
+
+# Societal Collapse Analysis (runs after data collection at 4 AM)
+30 4 * * * REDDIT_WORKER_URL=https://reddit-rss-proxy.reziux.workers.dev /home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/societal-collapse-report.js --minimax >> /home/reziux/.openclaw/workspace/logs/collapse-analysis.log 2>&1
+
+# Historical Collapse Analysis (weekly on Sundays at 5 AM)
+0 5 * * 0 /home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/collapse-historical-analysis.js >> /home/reziux/.openclaw/workspace/logs/collapse-historical.log 2>&1
+
+# Update MANIFEST.md with today's collapse data (runs after daily analysis)
+0 5 * * * /home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/collapse-manifest-builder.js --start-date=$(date +\%Y-\%m-\%d) --end-date=$(date +\%Y-\%m-\%d) >> /home/reziux/.openclaw/workspace/logs/collapse-manifest.log 2>&1
+0 */4 * * * /bin/bash /home/reziux/.openclaw/workspace/scripts/github-state-sync.sh >> /home/reziux/.openclaw/workspace/logs/github-sync.log 2>&1
+
+# Shadow Index v3 - Daily pre-flight check (18:00 GMT)
+0 18 * * * bash /home/reziux/.openclaw/scripts/shadow-v3-preflight.sh >> /home/reziux/.openclaw/logs/shadow-v3-preflight.log 2>&1
+
+# Shadow Index v3 - Daily summary generation (22:00 GMT)
+0 22 * * * bash /home/reziux/.openclaw/scripts/shadow-v3-summary-job.sh >> /home/reziux/.openclaw/logs/shadow-v3-summary-job.log 2>&1
+
+# Ollama health check - every 4 hours
+0 */4 * * * bash /home/reziux/.openclaw/scripts/ollama-health-check.sh >> /home/reziux/.openclaw/logs/ollama-health.log 2>&1
+
+# Burson Sale Tracker - 48h sliding window at 08:00 and 18:00 London time
+0 8 * * * bash /home/reziux/.openclaw/workspace/scripts/cron-burson-tracker.sh >> /home/reziux/.openclaw/workspace/logs/burson-tracker/cron.log 2>&1
+0 18 * * * bash /home/reziux/.openclaw/workspace/scripts/cron-burson-tracker.sh >> /home/reziux/.openclaw/workspace/logs/burson-tracker/cron.log 2>&1
+
+# PROJECT REQUIEM - The Zombie-Starvation Protocol (runs top of every hour if new files exist)
+0 10 * * 1 /home/reziux/.openclaw/workspace/scripts/cron/amazon-bf-check.sh
+
+# Ashby Blade ingest - every 6 hours
+0 9 * * * /home/reziux/.openclaw/workspace/scripts/cron/remind-alex.sh
+0 */6 * * * /home/reziux/.openclaw/workspace/scripts/blade-ingest-all.sh >> /home/reziux/.openclaw/workspace/logs/blade-ingest-all.log 2>&1
+
+# Hourly backup of all three repos (workspace + hermes-agent + outer .openclaw)
+# Replaces the old workspace-only inline; runs at the top of every hour.
+0 * * * * bash /home/reziux/.openclaw/workspace/scripts/hourly-backup-all.sh >> /home/reziux/.openclaw/workspace/logs/hourly-backup-all.log 2>&1
+
+
+# Memory lifecycle cron entries (added 2026-06-10)
+# Daily 02:00 UTC: memory-consolidator
+0 2 * * * /home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/memory-consolidator.js >> /home/reziux/.openclaw/workspace/logs/memory-consolidator.log 2>&1
+# Daily 02:30 UTC: memory-decay (45-day horizon)
+30 2 * * * /home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/memory-decay.js --days 45 >> /home/reziux/.openclaw/workspace/logs/memory-decay.log 2>&1
+# Weekly Sun 02:00 UTC: memory-curator (verbose)
+0 2 * * 0 /home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/memory-curator.js --verbose >> /home/reziux/.openclaw/workspace/logs/memory-curator.log 2>&1
+# WPP Intelligence Report - daily 08:30 Europe/London (after Burson tracker at 08:00)
+30 8 * * * /home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/wpp-intelligence.js --hours=24 >> /home/reziux/.openclaw/workspace/logs/wpp-intelligence.log 2>&1
+# Desperation Monitor - daily 05:30 UTC (after collapse analysis at 04:30 UTC)
+30 5 * * * bash /home/reziux/.openclaw/workspace/scripts/desperation-monitor-cron.sh >> /home/reziux/.openclaw/workspace/logs/desperation-monitor.log 2>&1
+0 */6 * * * /home/reziux/.openclaw/workspace/scripts/page-insights-cron.sh >/dev/null 2>&1
+*/30 * * * * bash /home/reziux/.openclaw/workspace/scripts/status-check.sh >> /home/reziux/.openclaw/workspace/logs/status-check.log 2>&1
+
+# DII Daily — entity extraction + daily reflection + shadow reindex (added 2026-08-05)
+# Owner: DII project (operator: Igor Morgunov)
+0 3 * * * /home/reziux/.openclaw/workspace/cron-jobs/dii-daily.sh >> /home/reziux/.openclaw/workspace/logs/dii-cron.log 2>&1
+
+# AI News Aggregator - daily 08:30 + 20:30 Europe/London (operator directive 2026-08-09)
+# Offsets from WPP Intelligence (08:30) and Burson Tracker (08:00, 18:00) to avoid stack contention
+30 8,20 * * * bash /home/reziux/.openclaw/workspace/scripts/cron-ai-news-aggregator.sh >> /home/reziux/.openclaw/workspace/data/ai-news/logs/cron.log 2>&1
+30 9,21 * * * bash /home/reziux/.openclaw/workspace/scripts/cron-youtube-discourse.sh >> /home/reziux/.openclaw/workspace/logs/youtube-discourse.log 2>&1
+*/15 * * * * bash /home/reziux/.openclaw/workspace/scripts/cron-mastodon-discourse.sh >> /home/reziux/.openclaw/workspace/logs/mastodon-discourse.log 2>&1
+*/10 * * * * /home/reziux/.openclaw/workspace/scripts/tailscale-serve-apply.sh >> /home/reziux/.openclaw/workspace/logs/tailscale-serve.log 2>&1

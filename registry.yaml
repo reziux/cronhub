@@ -1,0 +1,2246 @@
+version: 1
+active_scheduler: openclaw
+active_updated_at: "'2026-08-21T22:57:45Z'"
+updated_at: "2026-09-28T10:30:05Z"
+jobs:
+  - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
+    name: Cron Deduplicator
+    enabled: false
+    schedule_expr: "0 4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/deduplicate-crons.js"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1467623733345910864
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "'Job: Cron Deduplicator.'"
+
+  - id: "e26526cd-f7f0-4841-a2a1-4f8b70f9771d"
+    name: Daily Usage Stats
+    enabled: true
+    schedule_expr: "0 20 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/usage-stats.sh"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "usage-stats.sh - Parse OpenClaw session files for token usage statistics"
+
+  - id: "35d381df-4bbe-402d-9b4f-f4ff8da6d43c"
+    name: Daily Usage Stats Report
+    enabled: false
+    schedule_expr: "55 23 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Job: Daily Usage Stats Report.'"
+
+  - id: "7934c8d2-ce3f-4df9-b8ac-b1628507daf3"
+    name: Redis instance health check
+    enabled: false
+    schedule_expr: "'@every 300000ms'"
+    schedule_kind: interval
+    tz: UTC
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Health check: pings the local Redis instance.'"
+
+  - id: "f1ab1507-f5fc-4244-b4ba-a3a3139b432a"
+    name: Session Backup Sync
+    enabled: false
+    schedule_expr: "30 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Job: Session Backup Sync.'"
+
+  - id: "4ee2ebc9-a517-428b-a5aa-6dfc5e85f620"
+    name: "Session Converter (4h)"
+    enabled: true
+    schedule_expr: "0 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Job: Session Converter (4h).'"
+
+  - id: "85ddfc36-4bdc-480d-a1c0-735c3f4755fa"
+    name: "Session Indexer (3h)"
+    enabled: true
+    schedule_expr: "30 */3 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Job: Session Indexer (3h).'"
+
+  - id: "5a750dfe-1e82-4575-893e-b0dfaec1344b"
+    name: "Shadow Indexer (Nightly)"
+    enabled: true
+    schedule_expr: "0 3 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: Builds a search index of conversations and memory for fast retrieval.
+
+  - id: "f3fefaf6-ecf8-4e9b-ba97-4282823bd22f"
+    name: "opus-degradation-monitor"
+    enabled: true
+    schedule_expr: "0 9 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "Monitors for Claude Opus output degradation (regressions, refusals)."
+
+  - id: "15ba5b3e-1b1c-486e-a8e6-6b8a50b28333"
+    name: "'System Report to #alerts'"
+    enabled: false
+    schedule_expr: "0 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cron-meaningful-state-alert.js"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Job: System Report to #alerts.'"
+
+  - id: "9a835351-d96c-48d8-92bc-07653c695b9f"
+    name: WPP/Agency Intelligence
+    enabled: true
+    schedule_expr: "0 8,20 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538617161994739712
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "Daily WPP/agency intelligence report (24h rolling)."
+
+  - id: "14b33617-7c6b-4aef-b8d2-7ce84b136833"
+    name: "behavior-model-llm"
+    enabled: false
+    schedule_expr: "0 2 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "'Daily: refines the behavior model from recent session data.'"
+
+  - id: "f92a8f0a-b6d9-4a71-9cb6-ce0f1e7ac0f8"
+    name: "daily-infra-test"
+    enabled: false
+    schedule_expr: "0 8 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538617880072159373
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "'Job: daily-infra-test.'"
+
+  - id: "02efee6b-88bf-41f5-ab40-21e3361c76f5"
+    name: "dashboard-health-check"
+    enabled: false
+    schedule_expr: "0 9 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/test-dashboards.js."
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538617880072159373
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "'Daily: pings each dashboard (BLADE, PIS, sessions) and reports status.'"
+
+  - id: "84e20181-5058-43b4-acf9-cf69976400b1"
+    name: "hourly-usage-stats"
+    enabled: false
+    schedule_expr: "3 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/usage-stats.sh"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538617880072159373
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "usage-stats.sh - Parse OpenClaw session files for token usage statistics"
+
+  - id: "f6e1b8bb-83ba-4591-ae10-2193d0a1e275"
+    name: "inventory-refresh"
+    enabled: true
+    schedule_expr: "0 */6 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/inventory-generator.js"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Every 6h: refreshes the local tool/inventory index.'"
+
+  - id: "7b6ca6c9-683b-4b22-863c-2b6a86f10cf2"
+    name: "linkedin-blade-mode"
+    enabled: true
+    schedule_expr: "0 9 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/linkedin-blade-mode-scraper.js"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: ["umbrella-managed", blade]
+    source: openclaw.cron.json
+    log_file: "/home/reziux/.openclaw/workspace/logs/linkedin-blade-mode.log"
+    log_jobname_hint: "linkedin-blade-mode"
+    last_status: unknown
+    consecutive_errors: 0
+    description: "Scrapes LinkedIn guest API for AI/agent/data engineering roles, runs"
+
+  - id: "7af8a080-4313-4033-9962-32d5861d12a1"
+    name: "openclaw-backup"
+    enabled: true
+    schedule_expr: "'@every 3600000ms'"
+    schedule_kind: interval
+    tz: UTC
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Periodic: snapshots the openclaw config directory.'"
+
+  - id: "ea30604b-dbdb-44d8-b633-1b20677cce76"
+    name: "openclaw-repo-digest-am"
+    enabled: false
+    schedule_expr: "30 07 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538617880072159373
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "Daily digest of the openclaw-workspace git repo (am/pm)."
+
+  - id: "b3a48d43-30a5-4922-b504-d5f6dfa5c6a7"
+    name: "openclaw-repo-digest-pm"
+    enabled: true
+    schedule_expr: "30 19 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538617880072159373
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "Daily digest of the openclaw-workspace git repo (am/pm)."
+
+  - id: "5ee65713-9791-4212-ad6e-06211bfc45db"
+    name: "reed-blade-mode"
+    enabled: true
+    schedule_expr: "0 8 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/reed-blade-mode.js"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: ["umbrella-managed", blade]
+    source: openclaw.cron.json
+    log_file: "/home/reziux/.openclaw/workspace/logs/reed-blade-mode.log"
+    log_jobname_hint: "reed-blade-mode"
+    last_status: ok
+    consecutive_errors: 0
+    description: "Pulls Reed UK job feed for AI roles, scores each posting through the"
+
+  - id: "d9a21e94-61db-46f8-9d72-17ca70bdd111"
+    name: "soul-reflection"
+    enabled: false
+    schedule_expr: "0 3 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/session-highlights.js"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538617880072159373
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "'Daily self-reflection: updates SOUL.md and MEMORY.md with behavioral"
+
+  - id: "9af7a0a4-5148-4a42-acb8-ca3721e7d5ed"
+    name: "usage-monitor-agent-run"
+    enabled: false
+    schedule_expr: "0 9,21 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538617880072159373
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "Daily usage stats (token counts, request counts) written to usage-monitor.log."
+
+  - id: "9dbe1219-24ba-4862-a152-504f8fd1f43e"
+    name: "blade-fix-watchdog"
+    enabled: true
+    schedule_expr: "'@every 60000ms'"
+    schedule_kind: interval
+    tz: UTC
+    is_llm_turn: true
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/self-terminating-cron.js"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: "'Job: blade-fix-watchdog.'"
+
+  - id: "f06ae082-c67f-4757-ab7d-6180834fa5ad"
+    name: BLADE Greenhouse
+    enabled: true
+    schedule_expr: "0 6,10,14,18 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/greenhouse-blade-ingest.cron"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: ["umbrella-managed", blade]
+    source: openclaw.cron.json
+    log_file: "/home/reziux/.openclaw/workspace/logs/blade-greenhouse.log"
+    log_jobname_hint: "blade-greenhouse"
+    last_status: unknown
+    consecutive_errors: 0
+    description: "BLADE ingester for Greenhouse job boards (9-min runtime cap)."
+
+  - id: "765e7c93-0479-4945-a1cd-6f89bb4ad5cb"
+    name: BLADE Ashby
+    enabled: true
+    schedule_expr: "0 8,14,20 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/ashby-blade-ingest.js"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: ["umbrella-managed", blade]
+    source: openclaw.cron.json
+    log_file: "/home/reziux/.openclaw/workspace/logs/blade-ashby.log"
+    log_jobname_hint: "blade-ashby"
+    last_status: unknown
+    consecutive_errors: 0
+    description: "BLADE ingester for Ashby public postings (DDG-dorked)."
+
+  - id: "eba2d52a-8548-444d-b086-301e2fe6c67d"
+    name: BLADE Himalayas
+    enabled: true
+    schedule_expr: "0 7,11,15,19 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/himalayas-blade-ingest.js"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: ["umbrella-managed", blade]
+    source: openclaw.cron.json
+    log_file: "/home/reziux/.openclaw/workspace/logs/blade-himalayas.log"
+    log_jobname_hint: "blade-himalayas"
+    last_status: unknown
+    consecutive_errors: 0
+    description: "BLADE ingester for Himalayas (remote-first) job board."
+
+  - id: "39cd5b40-7a63-4f91-a1d5-a635ea0312ce"
+    name: BLADE WTTJ Pipeline
+    enabled: true
+    schedule_expr: "0 9,15,21 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: BLADE ingester for Welcome to the Jungle public job board.
+
+  - id: "ed958381-01d0-4e0a-8e03-3d32e0768620"
+    name: BLADE Workable
+    enabled: true
+    schedule_expr: "0 9 * * 1"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/workable-blade-ingest.js"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: None
+    tags: ["umbrella-managed", blade]
+    source: openclaw.cron.json
+    log_file: "/home/reziux/.openclaw/workspace/logs/blade-workable.log"
+    log_jobname_hint: "blade-workable"
+    last_status: ok
+    consecutive_errors: 0
+    description: BLADE ingester for the Workable public job board.
+
+  - id: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"
+    name: "AI News Aggregator (observer)"
+    enabled: true
+    schedule_expr: "32 8,20 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1467623733345910864
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Job: AI News Aggregator (observer).'"
+
+  - id: cf56db735dff1231d112b09fdbd8c9d2
+    name: "Mastodon Discourse (observer)"
+    enabled: true
+    schedule_expr: "2,17,32,47 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cron-mastodon-discourse.sh"
+    primary_executor: "hermes-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: skip
+    discord_channel: 1538624203224514682
+    tags: [hermes, "displacement-monitor"]
+    source: hermes.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Pipeline: hashtag seed (27 tags, AI-displacement universe) → keyword"
+
+  - id: "6bc188a2-054f-494b-909c-8b3efb302d29"
+    name: Bluesky Displacement Monitor
+    enabled: true
+    schedule_expr: "'*/30 * * * *'"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: 1538624116620402708
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Monitors the Bluesky firehose for AI-displacement content; emits a"
+
+  - id: 0ca848bdca6a
+    name: Bluesky AI Displacement Monitor
+    enabled: true
+    schedule_expr: "'*/15 * * * *'"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: /home/reziux/.openclaw/workspace/scripts/bluesky_monitor.sh
+    primary_executor: "hermes-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: skip
+    discord_channel: 1508445736650539079
+    tags: [hermes]
+    source: hermes.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: "Bluesky capture monitor — emits the latest summary if there's new content"
+
+  - id: 125a2c5aa052
+    name: OpenRent Rental Radar
+    enabled: false
+    schedule_expr: "0 9 */3 * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: "hermes-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: skip
+    discord_channel: 1508445736650539079
+    tags: [hermes]
+    source: hermes.cron.json
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: OpenRent Rental Radar.'"
+
+  - id: "crontab-"
+    name: node
+    enabled: false
+    schedule_expr: "0 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: node
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "openclaw-backup", historical]
+    source: "openclaw.crontab-backup"
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: node.'"
+
+  - id: "medium-l"
+    name: "medium-lobsters-cron:node"
+    enabled: true
+    schedule_expr: "0 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/usr/bin/node /home/reziux/.openclaw/workspace/scripts/medium-rss.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "medium-lobsters-cron", historical]
+    source: "openclaw.cron-jobs/medium-lobsters-cron"
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: medium-lobsters-cron:node.'"
+
+  - id: collapse
+    name: Societal Collapse Monitor
+    enabled: true
+    schedule_expr: "30 4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/societal-collapse-report.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", collapse, historical]
+    source: "system-crontab:30 4 * * *"
+    last_status: None
+    consecutive_errors: 0
+    description: "Daily 04:30 collapse-monitor pipeline (collect Reddit + news + RSS"
+    log_file: "/home/reziux/.openclaw/workspace/logs/collapse-analysis.log"
+    log_jobname_hint: collapse
+
+  - id: "syscron-8dfa88ac"
+    name: Grok Overnight
+    enabled: true
+    schedule_expr: "0 1 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/grok-overnight.sh >>"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Grok Overnight.'"
+    log_jobname_hint: "grok-overnight"
+    log_file: "/home/reziux/.openclaw/workspace/logs/grok-overnight.log"
+
+  - id: "syscron-dbe92ec8"
+    name: Sentinel Grok Alert
+    enabled: true
+    schedule_expr: "0 2 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/sentinel-grok-alert.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Sentinel Grok Alert.'"
+    log_jobname_hint: "sentinel-grok-alert"
+    log_file: "/home/reziux/.openclaw/workspace/logs/sentinel-grok-alert.log"
+
+  - id: "syscron-cbbefaea"
+    name: Usage Monitor
+    enabled: true
+    schedule_expr: "0 3 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/usage-monitor.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Usage Monitor.'"
+    log_jobname_hint: "usage-monitor"
+    log_file: "/home/reziux/.openclaw/workspace/logs/usage-monitor.log"
+
+  - id: "syscron-e3203a61"
+    name: PIS Full Sync
+    enabled: true
+    schedule_expr: "0 6,18 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/pis-full-sync.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: PIS Full Sync.'"
+    log_jobname_hint: "pis-full-sync"
+    log_file: "/home/reziux/.openclaw/workspace/logs/pis-full-sync.log"
+
+  - id: "syscron-08fc1743"
+    name: PIS Shadow Enrich
+    enabled: true
+    schedule_expr: "0 7 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/pis-shadow-enrich.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: PIS Shadow Enrich.'"
+    log_jobname_hint: "pis-shadow-enrich"
+    log_file: "/home/reziux/.openclaw/workspace/logs/pis-shadow-enrich.log"
+
+  - id: "syscron-397d813e"
+    name: "Tmp Cleanup (.fe*.so)"
+    enabled: true
+    schedule_expr: "0 4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "find /tmp -maxdepth 1 -name '.fe*.so' -mtime +1 -delete 2>/dev/null"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Daily: prunes /tmp/.fe*.so files older than 1 day.'"
+    log_jobname_hint: "tmp-cleanup-.fe*.so"
+
+  - id: "syscron-1638bec7"
+    name: Daily Shadow Index
+    enabled: true
+    schedule_expr: "0 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/daily-shadow-index.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: Builds a search index of conversations and memory for fast retrieval.
+    log_jobname_hint: "daily-shadow-index"
+    log_file: "/home/reziux/.openclaw/workspace/logs/daily-shadow-index.log"
+
+  - id: "syscron-ef6cd614"
+    name: Societal Collapse Report
+    enabled: true
+    schedule_expr: "30 4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/societal-collapse-report.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "Runs a societal-collapse analysis using local Ollama models."
+    log_jobname_hint: "societal-collapse-report"
+    log_file: "/home/reziux/.openclaw/workspace/logs/collapse-analysis.log"
+
+  - id: "syscron-2246e9ae"
+    name: Societal Collapse Historical
+    enabled: true
+    schedule_expr: "0 5 * * 0"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/collapse-historical-analysis.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "Weekly historical collapse-pattern analysis against the long-term dataset."
+    log_jobname_hint: "societal-collapse-historical"
+    log_file: "/home/reziux/.openclaw/workspace/logs/collapse-historical.log"
+
+  - id: "syscron-fde39568"
+    name: Collapse Manifest Builder
+    enabled: true
+    schedule_expr: "0 5 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/collapse-manifest-builder.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "Rebuilds the collapse-analysis MANIFEST.md from today's run data."
+    log_jobname_hint: "collapse-manifest-builder"
+    log_file: "/home/reziux/.openclaw/workspace/logs/collapse-manifest.log"
+
+  - id: "syscron-93bb50c1"
+    name: GitHub State Sync
+    enabled: true
+    schedule_expr: "0 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/bin/bash /home/reziux/.openclaw/workspace/scripts/github-state-sync.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: GitHub State Sync.'"
+    log_jobname_hint: "github-state-sync"
+    log_file: "/home/reziux/.openclaw/workspace/logs/github-sync.log"
+
+  - id: "syscron-6e1d4cc9"
+    name: Shadow v3 Preflight
+    enabled: true
+    schedule_expr: "0 18 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/scripts/shadow-v3-preflight.sh >> /home/reziux/.openclaw/logs/shadow-v3-preflight.log"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Shadow v3 Preflight.'"
+    log_jobname_hint: "shadow-v3-preflight"
+    log_file: "/home/reziux/.openclaw/logs/shadow-v3-preflight.log"
+
+  - id: "syscron-dc68be9d"
+    name: Shadow v3 Summary
+    enabled: true
+    schedule_expr: "0 22 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/scripts/shadow-v3-summary-job.sh >> /home/reziux/.openclaw/logs/shadow-v3-summary-job.log"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Shadow v3 Summary.'"
+    log_jobname_hint: "shadow-v3-summary"
+    log_file: "/home/reziux/.openclaw/logs/shadow-v3-summary-job.log"
+
+  - id: "syscron-a70f4eb3"
+    name: Ollama Health Check
+    enabled: true
+    schedule_expr: "0 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/scripts/ollama-health-check.sh >> /home/reziux/.openclaw/logs/ollama-health.log"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Ollama Health Check.'"
+    log_jobname_hint: "ollama-health-check"
+    log_file: "/home/reziux/.openclaw/logs/ollama-health.log"
+
+  - id: "syscron-24877134"
+    name: "Burson Tracker (08:00)"
+    enabled: true
+    schedule_expr: "0 8 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cron-burson-tracker.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "Runs the Burson sale tracker (48h sliding window at 08:00 / 18:00 Europe/London)."
+    log_jobname_hint: "burson-tracker-08-00"
+    log_file: "/home/reziux/.openclaw/workspace/logs/burson-tracker/cron.log"
+
+  - id: "syscron-e85b6407"
+    name: "Burson Tracker (18:00)"
+    enabled: true
+    schedule_expr: "0 18 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cron-burson-tracker.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "Runs the Burson sale tracker (48h sliding window at 08:00 / 18:00 Europe/London)."
+    log_jobname_hint: "burson-tracker-18-00"
+    log_file: "/home/reziux/.openclaw/workspace/logs/burson-tracker/cron.log"
+
+  - id: "syscron-99ca73c6"
+    name: Project Requiem — Amazon BF Check
+    enabled: true
+    schedule_expr: "0 10 * * 1"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cron/amazon-bf-check.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Fixed 2026-08-23: cron PATH lacks ~/.local/bin so bare `openclaw`"
+    log_jobname_hint: "project-requiem-—-amazon-bf-check failed silently.'"
+
+  - id: "syscron-7429c0f5"
+    name: Remind Alex
+    enabled: true
+    schedule_expr: "0 9 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cron/remind-alex.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Fixed 2026-08-23: cron PATH lacks ~/.local/bin so bare `openclaw`"
+    log_jobname_hint: "remind-alex failed silently.'"
+
+  - id: "syscron-6424ffeb"
+    name: "BLADE Ingest (Umbrella)"
+    enabled: true
+    schedule_expr: "0 */6 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/blade-ingest-all.sh >> /home/reziux/.openclaw/workspace/logs/blade-ingest-all.log"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Umbrella: runs all BLADE source ingesters (workable, ashby, himalayas,"
+
+  - id: "syscron-ec1a4337"
+    name: "Hourly Backup (All Repos)"
+    enabled: true
+    schedule_expr: "0 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/hourly-backup-all.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Hourly Backup (All Repos).'"
+    log_jobname_hint: "hourly-backup-all-repos"
+    log_file: "/home/reziux/.openclaw/workspace/logs/hourly-backup-all.log"
+
+  - id: "syscron-dff90f02"
+    name: Memory Consolidator
+    enabled: true
+    schedule_expr: "0 2 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/memory-consolidator.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Memory Consolidator.'"
+    log_jobname_hint: "memory-consolidator"
+    log_file: "/home/reziux/.openclaw/workspace/logs/memory-consolidator.log"
+
+  - id: "syscron-bedf8bfe"
+    name: Memory Decay
+    enabled: true
+    schedule_expr: "30 2 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/memory-decay.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Memory Decay.'"
+    log_jobname_hint: "memory-decay"
+    log_file: "/home/reziux/.openclaw/workspace/logs/memory-decay.log"
+
+  - id: "syscron-6785b476"
+    name: Memory Curator
+    enabled: true
+    schedule_expr: "0 2 * * 0"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/memory-curator.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Memory Curator.'"
+    log_jobname_hint: "memory-curator"
+    log_file: "/home/reziux/.openclaw/workspace/logs/memory-curator.log"
+
+  - id: "syscron-e03ee872"
+    name: WPP Intelligence
+    enabled: true
+    schedule_expr: "30 8 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/wpp-intelligence.js"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "Daily WPP/agency intelligence report (24h rolling)."
+    log_jobname_hint: "wpp-intelligence"
+    log_file: "/home/reziux/.openclaw/workspace/logs/wpp-intelligence.log"
+
+  - id: "syscron-58e5a9c8"
+    name: Desperation Monitor
+    enabled: true
+    schedule_expr: "30 5 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/desperation-monitor-cron.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "Tracks 'desperation' signal in the public discourse (post-collapse-analysis)."
+    log_jobname_hint: "desperation-monitor"
+    log_file: "/home/reziux/.openclaw/workspace/logs/desperation-monitor.log"
+
+  - id: "syscron-0a9df63a"
+    name: Page Insights
+    enabled: true
+    schedule_expr: "0 */6 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/page-insights-cron.sh >/dev/null"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Page Insights.'"
+    log_jobname_hint: "page-insights"
+
+  - id: "syscron-9027cd56"
+    name: Status Check
+    enabled: true
+    schedule_expr: "'*/30 * * * *'"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/status-check.sh >> /home/reziux/.openclaw/workspace/logs/status-check.log"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Status Check.'"
+    log_jobname_hint: "status-check"
+    log_file: "/home/reziux/.openclaw/workspace/logs/status-check.log"
+
+  - id: "syscron-9a64157a"
+    name: DII Daily
+    enabled: false
+    schedule_expr: "0 3 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/cron-jobs/dii-daily.sh >> /home/reziux/.openclaw/workspace/logs/dii-cron.log"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: DII Daily.'"
+
+  - id: "syscron-bc6bde7d"
+    name: AI News Aggregator
+    enabled: true
+    schedule_expr: "30 8,20 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cron-ai-news-aggregator.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: AI News Aggregator.'"
+    log_jobname_hint: "ai-news-aggregator"
+    log_file: "/home/reziux/.openclaw/workspace/data/ai-news/logs/cron.log"
+
+  - id: "syscron-8747ee46"
+    name: YouTube Discourse
+    enabled: true
+    schedule_expr: "30 9,21 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cron-youtube-discourse.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: YouTube Discourse.'"
+    log_jobname_hint: "youtube-discourse"
+    log_file: "/home/reziux/.openclaw/workspace/logs/youtube-discourse.log"
+
+  - id: "syscron-e779b183"
+    name: Mastodon Discourse
+    enabled: true
+    schedule_expr: "'*/15 * * * *'"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cron-mastodon-discourse.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Mastodon Discourse.'"
+    log_jobname_hint: "mastodon-discourse"
+    log_file: "/home/reziux/.openclaw/workspace/logs/mastodon-discourse.log"
+
+  - id: "syscron-9491f101"
+    name: Tailscale Serve Apply
+    enabled: true
+    schedule_expr: "'*/10 * * * *'"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/tailscale-serve-apply.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: None
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: None
+    consecutive_errors: 0
+    description: "'Job: Tailscale Serve Apply.'"
+    log_jobname_hint: "tailscale-serve-apply"
+    log_file: "/home/reziux/.openclaw/workspace/logs/tailscale-serve.log"
+
+  - id: "obs-a6f4c445"
+    name: "blade-greenhouse-observer"
+    enabled: true
+    schedule_expr: "15 6,10,14,18 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'BLADE Greenhouse' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: BLADE Greenhouse
+    tool. Format: "''⚠️ BLADE Greenhouse did not run on schedule (last seen: <age>)''."
+    description: "Bluesky capture + monitor combined — runs the python capture, then"
+
+  - id: "obs-8ca568a1"
+    name: "blade-ashby-observer"
+    enabled: true
+    schedule_expr: "15 8,14,20 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'BLADE Ashby' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: BLADE Ashby
+    failure to Discord channel 1538617880072159373 via the message tool. Format: "''⚠️"
+    BLADE Ashby did not run on schedule (last seen: "<age>)''. Do not post anything"
+    description: "'Verifier: posts a Discord alert if the matching BLADE ingester didn''t"
+
+  - id: "obs-309c604b"
+    name: "blade-himalayas-observer"
+    enabled: true
+    schedule_expr: "15 7,11,15,19 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'BLADE Himalayas' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: BLADE Himalayas
+    Format: "''⚠️ BLADE Himalayas did not run on schedule (last seen: <age>)''. Do"
+    description: "'Verifier: posts a Discord alert if the matching BLADE ingester didn''t"
+
+  - id: "obs-ea373125"
+    name: "blade-wttj-observer"
+    enabled: true
+    schedule_expr: "15 9,15,21 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'BLADE WTTJ Pipeline' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: BLADE WTTJ Pipeline
+    tool. Format: "''⚠️ BLADE WTTJ Pipeline did not run on schedule (last seen: <age>)''."
+    description: "'Verifier: posts a Discord alert if the matching BLADE ingester didn''t"
+
+  - id: "obs-a38bf7c7"
+    name: "blade-workable-observer"
+    enabled: true
+    schedule_expr: "15 9 * * 1"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'BLADE Workable' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: BLADE Workable
+    Format: "''⚠️ BLADE Workable did not run on schedule (last seen: <age>)''. Do not"
+    description: "'Verifier: posts a Discord alert if the matching BLADE ingester didn''t"
+
+  - id: "obs-7e7697d6"
+    name: "linkedin-blade-observer"
+    enabled: true
+    schedule_expr: "15 9 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'linkedin-blade-mode' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: "linkedin-blade-mode"
+    tool. Format: "''⚠️ linkedin-blade-mode did not run on schedule (last seen: <age>)''."
+    description: "'Verifier: posts a Discord alert if the matching BLADE ingester didn''t"
+
+  - id: "obs-bf24aa6e"
+    name: "reed-blade-observer"
+    enabled: true
+    schedule_expr: "15 8 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'reed-blade-mode' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: "reed-blade-mode"
+    Format: "''⚠️ reed-blade-mode did not run on schedule (last seen: <age>)''. Do"
+    description: "'Verifier: posts a Discord alert if the matching BLADE ingester didn''t"
+
+  - id: "obs-aed7c77d"
+    name: "opus-degradation-observer"
+    enabled: false
+    schedule_expr: "15 9 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'opus-degradation-monitor' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: "opus-degradation-monitor"
+    the message tool. Format: "''⚠️ opus-degradation-monitor did not run on schedule"
+    (last seen: "<age>)''. Do not post anything if the last run is fresh.'"
+    description: "Monitors for Claude Opus output degradation (regressions, refusals)."
+
+  - id: "obs-1f07746d"
+    name: "inventory-refresh-observer"
+    enabled: false
+    schedule_expr: "15 */6 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'inventory-refresh' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: "inventory-refresh"
+    tool. Format: "''⚠️ inventory-refresh did not run on schedule (last seen: <age>)''."
+    description: "'Every 6h: refreshes the local tool/inventory index.'"
+
+  - id: "obs-b300f07d"
+    name: "system-report-observer"
+    enabled: false
+    schedule_expr: "15 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh ''\\''System Report to #alerts'\\''' 120"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: "'System Report to #alerts'"
+    the message tool. Format: "''⚠️ System Report to #alerts did not run on schedule"
+    (last seen: "<age>)''. Do not post anything if the last run is fresh.'"
+    description: "'Job: system-report-observer.'"
+
+  - id: "obs-7c369a32"
+    name: "cronhub-self-check"
+    enabled: false
+    schedule_expr: "'*/5 * * * *'"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/cronhub/bin/cronhub-check-job-fresh.sh 'cronhub self' 7200"
+    primary_executor: "openclaw-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: 1538617880072159373
+    tags: [observer]
+    source: cronhub.observers
+    last_status: None
+    consecutive_errors: 0
+    watches: cronhub self
+    Format: "''⚠️ cronhub self did not run on schedule (last seen: <age>)''. Do not"
+    description: "'Job: cronhub-self-check.'"
+
+  - id: "fdcf1e55-1e03-4cc4-a44c-19a326332450"
+    name: "jobicy-blade-ingest"
+    enabled: true
+    schedule_expr: "0 */6 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/jobicy-blade-ingest.js"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: null
+    tags: [blade, "umbrella-managed", "added-2026-08-30"]
+    source: user.crontab
+    log_file: "/home/reziux/.openclaw/workspace/logs/jobicy-blade-ingest.log"
+    log_jobname_hint: "jobicy-blade-ingest"
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Umbrella: runs all BLADE source ingesters (workable, ashby, himalayas,"
+
+  - id: "3b56869f-539a-4d4d-b4ba-a46038d87b41"
+    name: "wwr-blade-ingest"
+    enabled: true
+    schedule_expr: "0 */6 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/wwr-blade-ingest.js"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: null
+    tags: [blade, "umbrella-managed", "added-2026-08-30"]
+    source: user.crontab
+    log_file: "/home/reziux/.openclaw/workspace/logs/wwr-blade-ingest.log"
+    log_jobname_hint: "wwr-blade-ingest"
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Umbrella: runs all BLADE source ingesters (workable, ashby, himalayas,"
+
+  - id: "811c3181-8c19-4706-a996-189c9e3f138f"
+    name: "arbeitnow-blade-ingest"
+    enabled: true
+    schedule_expr: "0 */6 * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/arbeitnow-blade-ingest.js"
+    primary_executor: "system-cron"
+    backup_executor: "hermes-cron"
+    fallback_strategy: skip
+    discord_channel: null
+    tags: [blade, "umbrella-managed", "added-2026-08-30"]
+    source: user.crontab
+    log_file: "/home/reziux/.openclaw/workspace/logs/arbeitnow-blade-ingest.log"
+    log_jobname_hint: "arbeitnow-blade-ingest"
+    last_status: ok
+    consecutive_errors: 0
+    description: "'Umbrella: runs all BLADE source ingesters (workable, ashby, himalayas,"
+
+  - id: "syscron-8aeb67ba"
+    name: "grok-overnight-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 1 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/grok-overnight-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-463d2797"
+    name: "sentinel-grok-alert-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 2 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/sentinel-grok-alert-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-505fec4b"
+    name: "usage-monitor-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 3 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/usage-monitor-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-efa83e25"
+    name: "daily-shadow-index-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/daily-shadow-index-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-0d556492"
+    name: "societal-collapse-report-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "30 4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "REDDIT_WORKER_URL=https://reddit-rss-proxy.reziux.workers.dev /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/societal-collapse-report-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-0a53bf11"
+    name: "societal-collapse-historical-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 5 * * 0"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/societal-collapse-historical-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-a865da5c"
+    name: "shadow-v3-preflight-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 18 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/shadow-v3-preflight-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-a76d8fab"
+    name: "shadow-v3-summary-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 22 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/shadow-v3-summary-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-ca3f0b15"
+    name: "ollama-health-check-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/ollama-health-check-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-9854ecdf"
+    name: "burson-tracker-08-00-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 8 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/burson-tracker-08-00-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-1fcd1379"
+    name: "burson-tracker-08-00-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 18 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/burson-tracker-08-00-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-b1ffbd51"
+    name: "blade-ingest-umbrella-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 */6 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/blade-ingest-umbrella-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-ca76b56f"
+    name: "hourly-backup-all-repos-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/hourly-backup-all-repos-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-44032fa4"
+    name: "memory-consolidator-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 2 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/memory-consolidator-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-4fc487d4"
+    name: "memory-decay-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "30 2 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/memory-decay-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-7a4cbd29"
+    name: "memory-curator-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "0 2 * * 0"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/memory-curator-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-ac0fea62"
+    name: "wpp-intelligence-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "30 8 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/wpp-intelligence-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-49248d51"
+    name: "desperation-monitor-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "30 5 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/desperation-monitor-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-20f72650"
+    name: "status-check-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "*/30 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/status-check-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-ec7831e1"
+    name: "ai-news-aggregator-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "30 8,20 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/ai-news-aggregator-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-abe21794"
+    name: "youtube-discourse-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "30 9,21 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/youtube-discourse-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-dfb55521"
+    name: "mastodon-discourse-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "*/15 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/mastodon-discourse-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-100fc1ea"
+    name: "tailscale-serve-apply-syscron-.wrap.sh"
+    enabled: true
+    schedule_expr: "*/10 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cronhub-wraps/tailscale-serve-apply-syscron-.wrap.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-cc9fc060"
+    name: arbiter.log
+    enabled: true
+    schedule_expr: "* * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/arbiter.sh >> /mnt/data/cronhub/state/arbiter.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-a3685f85"
+    name: "openclaw-heartbeat.sh"
+    enabled: true
+    schedule_expr: "* * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/openclaw-heartbeat.sh >/dev/null 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-2b849aca"
+    name: sync.log
+    enabled: true
+    schedule_expr: "*/30 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "python3 /mnt/data/cronhub/bin/sync_openclaw_jobs.py >> /mnt/data/cronhub/state/sync.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-33c8923f"
+    name: "auditor-cron.log"
+    enabled: true
+    schedule_expr: "0 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/cronhub-auditor.sh --quick >> /mnt/data/cronhub/audits/auditor-cron.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-bb695786"
+    name: cron.log
+    enabled: true
+    schedule_expr: "0 4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/usr/sbin/logrotate -f /home/reziux/.openclaw/logs/.logrotate/github-sync --state /home/reziux/.openclaw/logs/.logrotate/state >> /home/reziux/.openclaw/logs/.logrotate/cron.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-7785fb4f"
+    name: "verify-backups-cron.log"
+    enabled: true
+    schedule_expr: "30 4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/verify-backups.sh >> /home/reziux/.openclaw/workspace/logs/verify-backups-cron.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-51311118"
+    name: "channel-server.log"
+    enabled: true
+    schedule_expr: "@reboot sleep 60 && /home/linuxbrew/.linuxbrew/opt/zeroclaw/bin/zeroclaw"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "channel start > /home/reziux/.zeroclaw/data/state/channel-server.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-b62cc9b5"
+    name: "cronhub-alerts.log"
+    enabled: true
+    schedule_expr: "*/5 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/usr/bin/python3 /home/reziux/cronhub-dashboard/bin/cronhub-alerts.py >> /home/reziux/cronhub-dashboard/logs/cronhub-alerts.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-f571ef0e"
+    name: "cronhub-watchdog.log"
+    enabled: true
+    schedule_expr: "*/15 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/usr/bin/python3 /home/reziux/cronhub-dashboard/bin/cronhub-watchdog.py >> /home/reziux/cronhub-dashboard/logs/cronhub-watchdog.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-84affc8d"
+    name: arbiter.sh
+    enabled: true
+    schedule_expr: "* * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: bash /mnt/data/cronhub/bin/arbiter.sh
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-155f6594"
+    name: "cronhub-auditor.sh"
+    enabled: true
+    schedule_expr: "*/30 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/cronhub-auditor.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-9ffd95b5"
+    name: "cronhub-alerts-relay"
+    enabled: true
+    schedule_expr: "* * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/cronhub-alerts-relay"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-1f690cd9"
+    name: add_live_system_cron.py
+    enabled: true
+    schedule_expr: "0 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: python3 /mnt/data/cronhub/bin/add_live_system_cron.py
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-f9d8f818"
+    name: "cronhub-rotate-alerts.sh"
+    enabled: true
+    schedule_expr: "0 6 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/cronhub-rotate-alerts.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-a6d8272f"
+    name: "cronhub-rotate-baks.sh"
+    enabled: true
+    schedule_expr: "5 6 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/cronhub-rotate-baks.sh"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+

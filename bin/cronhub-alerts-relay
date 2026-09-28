@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# cronhub-alerts-relay shim — invoke via /mnt/data/cronhub/bin/alerts-relay.py
+set -u
+CRONHUB="${CRONHUB:-/mnt/data/cronhub}"
+exec python3 "$CRONHUB/bin/cronhub-alerts-relay.py" "$@"
