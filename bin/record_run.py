@@ -57,7 +57,7 @@ def main() -> int:
     if args.status == "error":
         alert_path = CRONHUB / "alerts" / "failures.jsonl"
         alert_path.parent.mkdir(parents=True, exist_ok=True)
-        fd2 = os.open(CRONHUB / "locks" / "alerts.lock", os.O_CREAT | os.O_RDWR)
+        os.makedirs(CRONHUB / "locks", exist_ok=True); fd2 = os.open(CRONHUB / "locks" / "alerts.lock", os.O_CREAT | os.O_RDWR)
         try:
             fcntl.flock(fd2, fcntl.LOCK_EX)
             with alert_path.open("a") as f:
