@@ -32,6 +32,19 @@ FAILS = CRONHUB / "alerts" / "failures.jsonl"
 sys.path.insert(0, str(BIN))
 import yaml_io
 
+# cronhub-purge-probes: strip test probes from production runs/
+# Added 2026-09-28: these suites fire real jobs to prove the wiring,
+# and those records landed in runs/YYYY-MM-DD.jsonl permanently
+# (124 of 610 records, 20%, across 52 fake job ids).
+import atexit, subprocess as _sp, sys as _sys
+def _purge_probes() -> None:
+    try:
+        _sp.run([_sys.executable, str(Path(__file__).parent / 'cronhub-purge-probes.py'), '--apply'],
+               stdout=_sp.DEVNULL, stderr=_sp.DEVNULL, timeout=120)
+    except Exception:
+        pass
+atexit.register(_purge_probes)
+
 PASS = "✅"
 FAIL = "❌"
 results = []

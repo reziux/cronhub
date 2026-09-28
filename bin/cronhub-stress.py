@@ -27,6 +27,19 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 CRONHUB = Path("/mnt/data/cronhub")
+
+# cronhub-purge-probes: strip test probes from production runs/
+# Added 2026-09-28: these suites fire real jobs to prove the wiring,
+# and those records landed in runs/YYYY-MM-DD.jsonl permanently
+# (124 of 610 records, 20%, across 52 fake job ids).
+import atexit, subprocess as _sp, sys as _sys
+def _purge_probes() -> None:
+    try:
+        _sp.run([_sys.executable, str(Path(__file__).parent / 'cronhub-purge-probes.py'), '--apply'],
+               stdout=_sp.DEVNULL, stderr=_sp.DEVNULL, timeout=120)
+    except Exception:
+        pass
+atexit.register(_purge_probes)
 REG = CRONHUB / "registry.yaml"
 BIN = CRONHUB / "bin"
 

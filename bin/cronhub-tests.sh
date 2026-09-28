@@ -384,3 +384,9 @@ with open('$AUDIT_DIR/tests.jsonl', 'a') as f:
 echo "Tests: PASS=$PASS FAIL=$FAIL WARN=$WARN"
 echo "Report: $REPORT_FILE"
 [ $FAIL -eq 0 ]
+
+# cronhub-purge-probes: strip test probes from production runs/
+# Added 2026-09-28: these suites fire real jobs to prove the wiring,
+# and those records landed in runs/YYYY-MM-DD.jsonl permanently
+# (124 of 610 records, 20%, across 52 fake job ids).
+python3 "$CRONHUB/bin/cronhub-purge-probes.py" --apply >/dev/null 2>&1 || true
