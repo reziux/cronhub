@@ -83,7 +83,7 @@ run_test "record_run.py standalone" \
     "rm -f '$CRONHUB/runs/_audit-test2.jsonl'; python3 '$BIN/record_run.py' _audit-test2 ok --duration 0.01 --note 'auditor-direct' && grep -q '_audit-test2' '$CRONHUB/runs/'*.jsonl"
 
 run_test "cronhub-fire.sh: nonexistent job" \
-    "SCHEDULER=openclaw '$BIN/cronhub-fire.sh' nonexistent_$$ >/dev/null 2>&1 || true; grep -q 'nonexistent_' '$CRONHUB/runs/'*.jsonl"
+    "SCHEDULER=openclaw '$BIN/cronhub-fire.sh' nonexistent_$$ >/dev/null 2>&1 || true; grep -q 'nonexistent_' '$CRONHUB/runs/'*.jsonl; bash '$BIN/cronhub-purge-job.sh' nonexistent_\$\$ >/dev/null 2>&1 || true"
 
 run_test "cronhub-fire.sh: disabled job skips" \
     "'$BIN/cronctl' disable e26526cd-f7f0-4841-a2a1-4f8b70f9771d >/dev/null && SCHEDULER=openclaw '$BIN/cronhub-fire.sh' e26526cd && '$BIN/cronctl' enable e26526cd-f7f0-4841-a2a1-4f8b70f9771d >/dev/null && grep -q '\"id\": \"e26526cd' '$CRONHUB/runs/'*.jsonl"

@@ -224,6 +224,9 @@ assert_contains "fire: hermes job skipped when active=openclaw" "primary=hermes-
 SCHEDULER=openclaw /mnt/data/cronhub/bin/cronhub-fire.sh "totally-fake-$$"
 LAST_FAKE=$(tail -1 /mnt/data/cronhub/runs/$(date -u +%Y-%m-%d).jsonl)
 assert_contains "fire: nonexistent produces error" "not in registry" "$LAST_FAKE"
+# Purge the deliberately-fake probe so it does not pollute the real
+# alerts/failures.jsonl (it would otherwise look like a genuine failure).
+bash "$BIN/cronhub-purge-job.sh" "totally-fake-$$" >/dev/null 2>&1 || true
 
 # breaker.sh: respects bypass
 assert_true "breaker: bypass works" \

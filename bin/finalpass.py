@@ -155,7 +155,21 @@ chk("V4 debounce: two identical enables produced ≤1 new bak",
 # ============================================================
 audit = CRONHUB / "audits" / "audits.jsonl"
 before_count = audit.read_text().count('"kind": "tirith-scan"') if audit.exists() else 0
-run(str(BIN/"cronhub-fire.sh"), "0ca848bdca6a")  # benign Bluesky monitor
+# HERMETIC: pin SCHEDULER=hermes so the job's primary_executor (hermes-cron)
+# matches the active scheduler. cronhub-fire.sh early-exits at the
+# "primary mismatch" branch otherwise, and never reaches the tirith block --
+# which made this check depend on wherever the cron-driven arbiter happened to
+# leave claims. Same fix as stress-suite M7c.
+import os as _os
+_prior_sched = _os.environ.get("SCHEDULER")
+_os.environ["SCHEDULER"] = "hermes"
+try:
+    run(str(BIN/"cronhub-fire.sh"), "0ca848bdca6a")  # benign Bluesky monitor
+finally:
+    if _prior_sched is None:
+        _os.environ.pop("SCHEDULER", None)
+    else:
+        _os.environ["SCHEDULER"] = _prior_sched
 time.sleep(0.5)
 after_count = audit.read_text().count('"kind": "tirith-scan"') if audit.exists() else 0
 chk("V5.a cronhub-fire.sh writes tirith-scan audit record",
