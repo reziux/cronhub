@@ -1,0 +1,26 @@
+- _meta:
+    archived_at: '2026-09-29T21:00:35Z'
+    reason: 'ghost-job: enabled=True but owner_script empty + log_file None; duplicate
+      of active 0ca848bdca6a Bluesky AI Displacement Monitor'
+    source: cronhub heartbeat poll, three consecutive alert cycles
+    remediation: flip enabled=False via dashboard API to suppress alerts; entry preserved
+      here for audit
+  job:
+    id: 6bc188a2-054f-494b-909c-8b3efb302d29
+    name: Bluesky Displacement Monitor
+    enabled: true
+    schedule_expr: '''''*/30 * * * *'''''
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: 1538624116620402708
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: '''''''Monitors the Bluesky firehose for AI-displacement content;
+      emits'
