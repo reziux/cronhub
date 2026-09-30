@@ -37,6 +37,7 @@ def main() -> int:
             continue
         if not rj["enabled"]:
             new_text = f"[cronhub] disabled — see registry.yaml ({rid})"
+            job["enabled"] = False  # registry is source of truth (mirror sync_openclaw_jobs.py:118)
             n_skipped += 1
         elif rj["primary_executor"] != "hermes-cron":
             new_text = f"[cronhub] primary executor is {rj['primary_executor']}, not hermes-cron — skipping"
