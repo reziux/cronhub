@@ -2310,8 +2310,7 @@ jobs:
     schedule_kind: cron
     tz: Europe/London
     is_llm_turn: false
-    owner_script: "'/usr/bin/python3 /home/reziux/cronhub-dashboard/bin/host-sampler.py"
-    ">/dev/null 2>&1 # cronhub": "host metric sampler'"
+    owner_script: "/usr/bin/python3 /home/reziux/cronhub-dashboard/bin/host-sampler.py >/dev/null 2>&1 # cronhub: host metric sampler"
     primary_executor: "system-cron"
     backup_executor: "openclaw-cron"
     fallback_strategy: "run-anyway"

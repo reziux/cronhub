@@ -188,6 +188,73 @@ def job_source(job: dict) -> str:
     return str(job.get("source", "unknown"))
 
 
+def _emit_entry(entry: dict, indent: int = 0) -> list[str]:
+    """Render one audit entry in disabled-jobs.yaml's own style.
+
+    yaml_io.write() takes a dict and emits a top-level KEY whose value is the
+    list; it cannot emit a bare top-level list at all, and yaml_io.read()
+    silently returns {} for one (its reader only collects a top-level list
+    under a key). So the list shape is rendered here, reusing yaml_io's
+    canonical scalar quoting. Keys are emitted in insertion order.
+    """
+    pad = " " * indent
+    lines: list[str] = []
+    for k, v in entry.items():
+        if isinstance(v, dict) and v:
+            lines.append("%s%s:" % (pad, k))
+            lines.extend(_emit_entry(v, indent + 2))
+        elif isinstance(v, list) and v and all(isinstance(i, str) for i in v):
+            lines.append("%s%s:" % (pad, k))
+            lines.extend("%s- %s" % (pad, yaml_io._emit_scalar(i)) for i in v)
+        else:
+            lines.append("%s%s: %s" % (pad, k, yaml_io._emit_scalar(v)))
+    return lines
+
+
+def load_disabled() -> tuple[str, int, str]:
+    """Return (shape, entry_count, raw_text) for disabled-jobs.yaml.
+
+    shape is "list" for a bare top-level list (what the file actually is) or
+    "dict" for a {"disabled": [...]} map. entry_count is counted from the raw
+    text, NOT from yaml_io.read(), which returns {} for the list shape and
+    would report every existing entry as absent.
+    """
+    if not DISABLED.exists():
+        return "list", 0, ""
+    raw = DISABLED.read_text()
+    # Shape is decided by the FIRST meaningful line, and only if it starts at
+    # column 0: a dict wrapper's entries are indented ("  - _meta:"), so a
+    # stripped-prefix test would misread {"disabled": [...]} as a list.
+    first = next((l for l in raw.splitlines()
+                  if l.strip() and not l.strip().startswith("#")), "")
+    if first.startswith("- "):
+        count = sum(1 for l in raw.splitlines() if l.startswith("- "))
+        return "list", count, raw
+    return "dict", len(yaml_io.read(DISABLED).get("disabled", [])), raw
+
+
+def save_disabled(shape: str, raw: str, new_entries: list[dict]) -> None:
+    """Append new_entries to disabled-jobs.yaml, preserving its shape.
+
+    Textual append, never yaml_io.write(). That writer cannot represent this
+    file at all: it takes a dict so it cannot emit a bare top-level list, and
+    it has no nested-mapping support, so it flattens each entry's `_meta`
+    sub-mapping to `_meta: ""` and drops the keys. Keeping the existing bytes
+    and appending means no pre-existing entry can be dropped, reordered or
+    reflowed in EITHER shape.
+    """
+    dash_col, key_indent = (0, 2) if shape == "list" else (2, 4)
+    block = []
+    for e in new_entries:
+        # render the entry as a mapping at key_indent (the file's own style:
+        # "- _meta:" then "  job:"), then swap that indent for the dash
+        lines = _emit_entry(e, key_indent)
+        block.append(" " * dash_col + "- " + lines[0][key_indent:])
+        block.extend(lines[1:])
+    body = raw if raw.endswith("\n") or not raw else raw + "\n"
+    DISABLED.write_text(body + "\n".join(block) + "\n")
+
+
 def scan_and_report() -> list:
     """C2: scan_problems() can return a line-number-0 sentinel for an
     unreadable file. Never index the file with it; report it loudly."""
@@ -314,26 +381,24 @@ def main() -> int:
     print("post-write '' count: %d" % REGISTRY.read_text().count("''"))
 
     if args.apply == "ghosts" and ghosts:
-        existing = yaml_io.read(DISABLED) if DISABLED.exists() else {}
-        entries = (existing.get("disabled", [])
-                   if isinstance(existing, dict) else [])
-        for g in ghosts:
-            entries.append({
-                "_meta": {
-                    "archived_at": time.strftime("%Y-%m-%dT%H:%M:%SZ",
-                                                 time.gmtime()),
-                    "reason": ("registry claimed ownership (source=%s) but "
-                               "owner_script is empty; the work runs from "
-                               "system cron under cronhub-wraps/*.wrap.sh"
-                               % job_source(g)),
-                    "source": "registry_repair.py ghosts pass",
-                    "remediation": "enabled=False; cron entry left untouched",
-                },
-                "job": g,
-                "crontab_matches": crontab_for(g),
-            })
-        yaml_io.write(DISABLED, {"disabled": entries})
-        print("appended %d entries to %s" % (len(ghosts), DISABLED))
+        shape, before, raw = load_disabled()
+        new_entries = [{
+            "_meta": {
+                "archived_at": time.strftime("%Y-%m-%dT%H:%M:%SZ",
+                                             time.gmtime()),
+                "reason": ("registry claimed ownership (source=%s) but "
+                           "owner_script is empty; the work runs from "
+                           "system cron under cronhub-wraps/*.wrap.sh"
+                           % job_source(g)),
+                "source": "registry_repair.py ghosts pass",
+                "remediation": "enabled=False; cron entry left untouched",
+            },
+            "job": g,
+            "crontab_matches": crontab_for(g),
+        } for g in ghosts]
+        save_disabled(shape, raw, new_entries)
+        print("appended %d entries to %s (%s shape; %d pre-existing kept)"
+              % (len(new_entries), DISABLED, shape, before))
     return 0
 
 
