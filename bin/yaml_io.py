@@ -11,11 +11,38 @@ characters via quoting. Round-trip safe for our schema.
 """
 from __future__ import annotations
 import os
+import re
 from pathlib import Path
 from typing import Any
 
 # Characters that force quoting (YAML reserved or whitespace)
 _SPECIAL_CHARS = set(":#\"'\n[]{})&*!|>,%@`?,-")
+
+_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def is_identifier(key: str) -> bool:
+    """True if `key` could be a real key in this schema.
+
+    Every legitimate registry key is a plain snake_case identifier. Damage
+    from a value split on an embedded ": " produces keys containing spaces
+    and punctuation, which this rejects.
+    """
+    return bool(_KEY_RE.match(str(key)))
+
+
+class RegistryParseError(ValueError):
+    """Raised in strict mode when a sub-key cannot be a real key.
+
+    These lines are not skipped by the reader - it MISINTERPRETS them into
+    invented keys, which is how the corruption stayed invisible.
+    """
+
+    def __init__(self, problems):
+        self.problems = list(problems)
+        detail = "\n".join("  line %d: %s" % (n, t) for n, t in self.problems[:10])
+        super().__init__("registry has %d malformed key line(s):\n%s"
+                         % (len(self.problems), detail))
 
 
 def _emit_scalar(v: Any) -> str:
@@ -158,7 +185,7 @@ def _split_list(s: str) -> list[str]:
     return parts
 
 
-def read(path: Path) -> dict:
+def read(path: Path, strict: bool = False, problems: list | None = None) -> dict:
     """Parse a YAML doc with our extended schema.
 
     Supports:
@@ -174,6 +201,8 @@ def read(path: Path) -> dict:
         scalar-list whose elements are pending
     """
     text = path.read_text()
+    if problems is None:
+        problems = []
     out: dict = {}
     cur_list = None
     cur_item = None
@@ -189,7 +218,7 @@ def read(path: Path) -> dict:
     # style: `key:\n  - a`) or parent_indent + 2 (standard YAML).
     sub_list_parent_indent = -1
 
-    for raw in text.splitlines():
+    for lineno, raw in enumerate(text.splitlines(), 1):
         if not raw.strip():
             continue
         if raw.lstrip().startswith("#"):
@@ -261,26 +290,36 @@ def read(path: Path) -> dict:
             k, _, v = stripped.partition(":")
             k = k.strip(); v = v.strip()
             parsed_k = _parse_scalar(k)
-            # Treat ``, `''`, `""`, `"''"` (the value `''` quoted with double-quotes),
-            # and bare empty as "value is empty / list" so that the scalar-list
-            # detection works for single-quoted empty strings across both
-            # quoting conventions.
-            if v in ("", "''", '""', '"\'\''):
-                # Empty value: could be scalar-list decl. Initialize as empty list
-                # and let a subsequent dash line activate it.
+            if not is_identifier(parsed_k):
+                # This line is shaped like a sub-key but the name cannot be
+                # real. It is a value that was split on an embedded ": ".
+                # Record it; still store it so lenient callers see the data.
+                problems.append((lineno, raw))
+            if v == "":
+                # Empty value: could be a scalar-list declaration. Initialize as
+                # an empty list and let a subsequent dash line activate it.
                 cur_item[parsed_k] = []
                 sub_list_key = parsed_k
                 sub_list_parent_indent = indent
             else:
-                parsed_v = _parse_scalar(v)
-                # `''` (literal two single quotes that wasn't a quoted-empty) —
-                # normalize to actual empty string for consistency.
-                if parsed_v == "''":
-                    parsed_v = ""
-                cur_item[parsed_k] = parsed_v
+                cur_item[parsed_k] = _parse_scalar(v)
                 sub_list_key = None
                 sub_list_parent_indent = -1
-        # else: silently skip (e.g. trailing comment lines we've already filtered,
-        # or lines we don't recognise in our schema)
+        else:
+            # A line matching no branch at all. Kept for completeness.
+            problems.append((lineno, raw))
+
+    if strict and problems:
+        raise RegistryParseError(problems)
 
     return out
+
+
+def scan_problems(path: Path) -> list:
+    """Return [(lineno, raw_line)] for every line carrying a malformed key.
+
+    Never raises. Use this to audit a registry without breaking callers.
+    """
+    problems: list = []
+    read(path, strict=False, problems=problems)
+    return problems
