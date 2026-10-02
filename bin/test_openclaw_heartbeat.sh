@@ -6,6 +6,20 @@ SCRIPT="/mnt/data/cronhub-work/bin/openclaw-heartbeat.sh"
 SANDBOX="$(mktemp -d)"
 trap 'rm -rf "$SANDBOX"' EXIT
 
+# Harness-side bus bootstrap, mirroring what the script does for itself, so
+# that the reference MainPID query below works even when the harness is
+# invoked from a bare ssh shell.
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+
+# To force the script's systemd path to fail, BOTH variables must be broken.
+# `systemctl --user` prefers XDG_RUNTIME_DIR over DBUS_SESSION_BUS_ADDRESS:
+# pointing DBUS_SESSION_BUS_ADDRESS at a dead socket while XDG is valid still
+# returns LoadState=loaded, so a DBUS-only override never reaches the
+# fallback branch. Verified on this host.
+BROKEN_XDG="/run/user/1000/cronhub-test-no-such-dir"
+BROKEN_DBUS="unix:path=/run/user/1000/cronhub-test-no-such-dir/bus"
+
 PASS=0; FAIL=0
 check() { # check <label> <expected> <actual>
     if [ "$2" = "$3" ]; then
@@ -25,6 +39,19 @@ run_case() { # run_case <unit>; sets RC, STATUS, HB_EXISTS
     if [ -f "$SANDBOX/state/openclaw.heartbeat" ]; then HB_EXISTS=yes; else HB_EXISTS=no; fi
 }
 
+run_case_no_bus() { # run_case_no_bus <unit>; broken user bus, sets RC, STATUS, HB_EXISTS
+    local unit="$1"
+    rm -rf "$SANDBOX"; mkdir -p "$SANDBOX"
+    env CRONHUB="$SANDBOX" OPENCLAW_PIDFILE="$SANDBOX/gateway.pid" \
+        OPENCLAW_UNIT="$unit" \
+        XDG_RUNTIME_DIR="$BROKEN_XDG" \
+        DBUS_SESSION_BUS_ADDRESS="$BROKEN_DBUS" \
+        bash "$SCRIPT"
+    RC=$?
+    STATUS="$(cat "$SANDBOX/state/openclaw.heartbeat.status" 2>/dev/null || echo '<missing>')"
+    if [ -f "$SANDBOX/state/openclaw.heartbeat" ]; then HB_EXISTS=yes; else HB_EXISTS=no; fi
+}
+
 echo "== active unit resolves to ok =="
 run_case openclaw-gateway
 check "status is ok"       "ok"   "$(printf '%s' "$STATUS" | cut -d' ' -f1)"
@@ -32,6 +59,10 @@ check "pid is numeric"     "yes"  "$(printf '%s' "$STATUS" | awk '{print $2 ~ /^
 check "rc is 0"            "0"    "$RC"
 check "heartbeat touched"  "yes"  "$HB_EXISTS"
 check "pidfile written"    "yes"  "$([ -f "$SANDBOX/gateway.pid" ] && echo yes || echo no)"
+# Finding 3: a merely-plausible PID is not enough. The original production bug
+# was a *wrong* PID, so pin the value to systemd's authoritative MainPID.
+REAL_MAINPID="$(systemctl --user show openclaw-gateway --property=MainPID --value 2>/dev/null)"
+check "pid equals systemd MainPID" "$REAL_MAINPID" "$(printf '%s' "$STATUS" | cut -d' ' -f2)"
 
 echo "== loaded but stopped unit is down =="
 run_case claw-watchdog.service
@@ -45,11 +76,17 @@ check "status unknown no-pid" "unknown no-pid" "$STATUS"
 check "rc is non-zero"     "nonzero" "$([ "$RC" -ne 0 ] && echo nonzero || echo zero)"
 check "heartbeat NOT touched" "no" "$HB_EXISTS"
 
-echo "== cron-like empty environment still resolves =="
+echo "== cron-like empty environment still resolves via systemd, not pgrep =="
 # Minimal env, exactly as cron provides it: PATH and HOME only, no
 # XDG_RUNTIME_DIR and no DBUS_SESSION_BUS_ADDRESS. The script's own bootstrap
 # must make systemctl --user work anyway. Not routed through run_case,
 # because a nested `env -i` would wipe the harness's own path overrides too.
+#
+# The token-count assertion is the load-bearing one: if the bootstrap were
+# deleted, systemctl would return empty, the pgrep fallback would find the
+# live gateway, and the script would still report ok/rc 0/touched - but with
+# a third "pgrep-fallback" token. Exactly two tokens proves systemd resolved
+# the PID from a bare environment.
 rm -rf "$SANDBOX"; mkdir -p "$SANDBOX"
 env -i PATH="$PATH" HOME="$HOME" \
     CRONHUB="$SANDBOX" OPENCLAW_PIDFILE="$SANDBOX/gateway.pid" \
@@ -61,6 +98,29 @@ if [ -f "$SANDBOX/state/openclaw.heartbeat" ]; then HB_EXISTS=yes; else HB_EXIST
 check "status is ok"       "ok"   "$(printf '%s' "$STATUS" | cut -d' ' -f1)"
 check "rc is 0"            "0"    "$RC"
 check "heartbeat touched"  "yes"  "$HB_EXISTS"
+check "resolved by systemd, not pgrep" "2" "$(printf '%s' "$STATUS" | awk '{print NF}')"
+check "no pgrep-fallback suffix" "no" \
+    "$(printf '%s' "$STATUS" | grep -q 'pgrep-fallback' && echo yes || echo no)"
+
+echo "== unreachable user bus: default unit degrades to pgrep fallback =="
+run_case_no_bus openclaw-gateway
+check "status is ok"       "ok"   "$(printf '%s' "$STATUS" | cut -d' ' -f1)"
+check "status carries pgrep-fallback suffix" "yes" \
+    "$(printf '%s' "$STATUS" | grep -q 'pgrep-fallback' && echo yes || echo no)"
+check "fallback pid is the real gateway pid" \
+    "$(pgrep -f 'openclaw/dist/index\.js gateway' 2>/dev/null | head -1)" \
+    "$(printf '%s' "$STATUS" | cut -d' ' -f2)"
+check "rc is 0"            "0"    "$RC"
+check "heartbeat touched"  "yes"  "$HB_EXISTS"
+
+echo "== unreachable user bus: non-default unit must NOT claim a fallback pid =="
+# The script only falls back for the default unit. Without that guard this
+# case would report the openclaw pid as claw-watchdog's, i.e. the exact class
+# of wrong-pid bug that broke production.
+run_case_no_bus claw-watchdog.service
+check "status unknown dbus" "unknown dbus" "$STATUS"
+check "rc is non-zero"     "nonzero" "$([ "$RC" -ne 0 ] && echo nonzero || echo zero)"
+check "heartbeat NOT touched" "no" "$HB_EXISTS"
 
 echo
 echo "passed: $PASS  failed: $FAIL"
