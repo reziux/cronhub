@@ -77,13 +77,17 @@ tick elects openclaw again. There is no latch to clear.
 
 ### Resolution order
 
-1. `systemctl --user show openclaw-gateway --property=MainPID --value`,
-   after exporting:
+1. `systemctl --user show ${OPENCLAW_UNIT:-openclaw-gateway} --property=MainPID
+   --value`, after exporting:
    - `XDG_RUNTIME_DIR=/run/user/$(id -u)`
    - `DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus`
 2. If the systemctl path is unreachable, fall back to the existing `pgrep`
    pattern, and record that the degraded path was used.
 3. "Could not determine" is never collapsed into "gateway is down".
+
+`OPENCLAW_UNIT` is a new env override, defaulting to `openclaw-gateway`. It
+exists solely so the negative paths below are testable without stopping the
+live gateway.
 
 ### The D-Bus bootstrap is mandatory, not optional
 
@@ -105,9 +109,18 @@ Written to `state/openclaw.heartbeat.status` next to the existing touch:
 
 | State | Condition | Touch? | Exit |
 |---|---|---|---|
-| `ok <pid>` | MainPID > 0 | yes | 0 |
-| `down` | MainPID == 0, gateway genuinely stopped | no | 0 |
-| `unknown <reason>` | systemctl unreachable, PID unresolvable, or `touch` failed | no | non-zero |
+| `ok <pid>` | systemctl exit 0 and MainPID > 0 | yes | 0 |
+| `down` | systemctl exit 0 and MainPID == 0 | no | 0 |
+| `unknown dbus` | systemctl could not be reached (no session bus) | no | non-zero |
+| `unknown no-pid` | systemctl failed or MainPID unparseable | no | non-zero |
+| `unknown touch-failed` | `touch` or status write failed | no | non-zero |
+
+**Derivation depends on systemctl's exit status, not on empty output.** This
+matters: `systemctl show` against a *nonexistent* unit returns non-zero and
+prints nothing, which must be `unknown no-pid` — not `down`. Only a unit that
+exists and reports `MainPID 0` is a genuine `down`. Treating "empty" as "stopped"
+would reintroduce exactly the measurement-vs-reality conflation this spec
+exists to remove.
 
 Only `ok` touches `openclaw.heartbeat`. The arbiter's existing contract is
 preserved exactly: it reads heartbeat freshness and nothing else.
@@ -140,8 +153,12 @@ Each step is executable, not an assertion.
 4. Cron-environment proof: `env -i bash bin/openclaw-heartbeat.sh` still
    yields `ok <pid>`. This is the check that would have caught the naive
    version of this fix.
-5. Negative path: run with the unit name overridden to a nonexistent unit;
-   expect `down`, no touch, exit 0.
+5. Negative paths, exercised without touching the live gateway:
+   - `OPENCLAW_UNIT=definitely-not-a-unit` → `unknown no-pid`, no touch,
+     non-zero exit. **Not** `down`.
+   - `OPENCLAW_UNIT=<a real but stopped unit>` → `down`, no touch, exit 0.
+   - If no genuinely stopped user unit exists to point at, this step is
+     skipped and recorded as unverified rather than faked.
 6. After one arbiter tick: `claims/active_scheduler` returns to `openclaw`,
    `last_flip_reason` records the handover.
 7. Next hourly cron run reports `cronhub: clean` with the heartbeat
