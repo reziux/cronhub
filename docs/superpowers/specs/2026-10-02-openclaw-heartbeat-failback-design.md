@@ -109,21 +109,29 @@ Written to `state/openclaw.heartbeat.status` next to the existing touch:
 
 | State | Condition | Touch? | Exit |
 |---|---|---|---|
-| `ok <pid>` | systemctl exit 0 and MainPID > 0 | yes | 0 |
-| `down` | systemctl exit 0 and MainPID == 0 | no | 0 |
-| `unknown dbus` | systemctl could not be reached (no session bus) | no | non-zero |
-| `unknown no-pid` | systemctl failed or MainPID unparseable | no | non-zero |
+| `ok <pid>` | LoadState `loaded`, MainPID > 0 | yes | 0 |
+| `ok <pid> pgrep-fallback` | systemd unreachable, PID found by pgrep | yes | 0 |
+| `down` | LoadState `loaded`, MainPID == 0 | no | 0 |
+| `unknown no-pid` | LoadState `not-found`, or MainPID unparseable | no | non-zero |
+| `unknown dbus` | LoadState empty — user bus unreachable | no | non-zero |
 | `unknown touch-failed` | `touch` or status write failed | no | non-zero |
 
-**Derivation depends on systemctl's exit status, not on empty output.** This
-matters: `systemctl show` against a *nonexistent* unit returns non-zero and
-prints nothing, which must be `unknown no-pid` — not `down`. Only a unit that
-exists and reports `MainPID 0` is a genuine `down`. Treating "empty" as "stopped"
-would reintroduce exactly the measurement-vs-reality conflation this spec
-exists to remove.
+**`LoadState`, not exit status, is the discriminator.** Measured:
 
-Only `ok` touches `openclaw.heartbeat`. The arbiter's existing contract is
-preserved exactly: it reads heartbeat freshness and nothing else.
+| Unit | LoadState | ActiveState | MainPID |
+|---|---|---|---|
+| `definitely-not-a-unit` | `not-found` | `inactive` | `0` |
+| `claw-watchdog.service` | `loaded` | `inactive` | `0` |
+| `openclaw-gateway` | `loaded` | `active` | `3569044` |
+
+All three exit `rc=0`. `MainPID` alone **cannot** distinguish "does not exist"
+from "stopped" — both return `0`. A unit that is not loaded is a registry or
+unit-file problem, not a stopped gateway, so it reports `unknown no-pid`
+rather than `down`. Collapsing those two is precisely the
+measurement-vs-reality conflation this spec exists to remove.
+
+Only `ok` (either form) touches `openclaw.heartbeat`. The arbiter's existing
+contract is preserved exactly: it reads heartbeat freshness and nothing else.
 
 `down` and `unknown` are deliberately distinct. Conflating them is precisely
 how a full card turned into an invisible scheduler failover.
@@ -154,11 +162,13 @@ Each step is executable, not an assertion.
    yields `ok <pid>`. This is the check that would have caught the naive
    version of this fix.
 5. Negative paths, exercised without touching the live gateway:
-   - `OPENCLAW_UNIT=definitely-not-a-unit` → `unknown no-pid`, no touch,
-     non-zero exit. **Not** `down`.
-   - `OPENCLAW_UNIT=<a real but stopped unit>` → `down`, no touch, exit 0.
-   - If no genuinely stopped user unit exists to point at, this step is
-     skipped and recorded as unverified rather than faked.
+   - `OPENCLAW_UNIT=definitely-not-a-unit` → `unknown no-pid` (LoadState
+     `not-found`), no touch, non-zero exit. **Not** `down`.
+   - `OPENCLAW_UNIT=claw-watchdog.service` (loaded, inactive) → `down`,
+     no touch, exit 0.
+   - `env -i` with `OPENCLAW_UNIT=openclaw-gateway` → the D-Bus bootstrap
+     must still yield `ok <pid>`. This is the check that would have caught
+     the naive version of this fix.
 6. After one arbiter tick: `claims/active_scheduler` returns to `openclaw`,
    `last_flip_reason` records the handover.
 7. Next hourly cron run reports `cronhub: clean` with the heartbeat
