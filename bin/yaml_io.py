@@ -193,6 +193,15 @@ def read(path: Path, strict: bool = False, problems: list | None = None) -> dict
       - top-level list of dicts (with two indent styles: 0-space dash, 2-space dash)
       - within a dict, a scalar-list value under any key (`tags:\n  - a\n  - b`)
 
+    Raises RegistryParseError in strict mode if any key name could not be
+    real. Pass `problems` to collect them without raising.
+    """
+    return _read_text(path.read_text(), strict=strict, problems=problems)
+
+
+def _read_text(text: str, strict: bool = False, problems: list | None = None) -> dict:
+    """Parse an already-read document. See read() for the schema.
+
     State machine:
       - `cur_list`: None or the top-level list we're appending outer items to
       - `cur_item`: None or the current dict-item being built
@@ -200,7 +209,6 @@ def read(path: Path, strict: bool = False, problems: list | None = None) -> dict
       - `sub_list_key`: None or the key in cur_item that's currently a
         scalar-list whose elements are pending
     """
-    text = path.read_text()
     if problems is None:
         problems = []
     out: dict = {}
@@ -252,7 +260,13 @@ def read(path: Path, strict: bool = False, problems: list | None = None) -> dict
                 continue
             _, _, rest = stripped.partition("- ")
             k, _, v = rest.partition(":")
-            cur_item = {_parse_scalar(k.strip()): _parse_scalar(v.strip()) if v.strip() else ""}
+            parsed_k = _parse_scalar(k.strip())
+            if not is_identifier(parsed_k):
+                # Same damage as the sub-key branch: this key name cannot be
+                # real, it is a value fragment split on an embedded ": ".
+                # Record it; still store it so lenient callers see the job.
+                problems.append((lineno, raw))
+            cur_item = {parsed_k: _parse_scalar(v.strip()) if v.strip() else ""}
             cur_list.append(cur_item)
             item_indent = indent
             sub_list_key = None
@@ -263,7 +277,13 @@ def read(path: Path, strict: bool = False, problems: list | None = None) -> dict
                 continue
             _, _, rest = stripped.partition("- ")
             k, _, v = rest.partition(":")
-            cur_item = {_parse_scalar(k.strip()): _parse_scalar(v.strip()) if v.strip() else ""}
+            parsed_k = _parse_scalar(k.strip())
+            if not is_identifier(parsed_k):
+                # Same damage as the sub-key branch: this key name cannot be
+                # real, it is a value fragment split on an embedded ": ".
+                # Record it; still store it so lenient callers see the job.
+                problems.append((lineno, raw))
+            cur_item = {parsed_k: _parse_scalar(v.strip()) if v.strip() else ""}
             cur_list.append(cur_item)
             item_indent = indent
             sub_list_key = None
@@ -272,6 +292,11 @@ def read(path: Path, strict: bool = False, problems: list | None = None) -> dict
         elif indent == 0 and ":" in stripped and not stripped.startswith("-"):
             k, _, v = stripped.partition(":")
             k = k.strip(); v = v.strip()
+            if not is_identifier(k):
+                # Top-level key name cannot be real: a value fragment that
+                # landed at column 0. Record it; still store it so lenient
+                # callers keep seeing every top-level key.
+                problems.append((lineno, raw))
             if v == "":
                 cur_list = []
                 out[k] = cur_list
@@ -318,8 +343,14 @@ def read(path: Path, strict: bool = False, problems: list | None = None) -> dict
 def scan_problems(path: Path) -> list:
     """Return [(lineno, raw_line)] for every line carrying a malformed key.
 
-    Never raises. Use this to audit a registry without breaking callers.
+    Never raises. An unreadable file is itself a problem and is reported as a
+    single synthetic entry with line number 0, so an empty result always
+    means "read fine, no problems found" and never "could not tell".
     """
+    try:
+        text = Path(path).read_text()
+    except (OSError, UnicodeDecodeError) as exc:
+        return [(0, "<unreadable: %s: %s>" % (type(exc).__name__, exc))]
     problems: list = []
-    read(path, strict=False, problems=problems)
+    _read_text(text, strict=False, problems=problems)
     return problems
