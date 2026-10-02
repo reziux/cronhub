@@ -126,7 +126,12 @@ invariants check that fails loudly on each of D1–D7:
 - no job contains a key outside the canonical schema
 - no string value contains a run of ≥2 leading or trailing apostrophes
 - no value equals the string `'None'`
-- no `schedule_expr` is non-empty and fails to parse as cron or `@every`
+- no `schedule_expr` is non-empty and malformed, where "malformed" is
+  concrete: the value must be either `@every <digits>ms`, or exactly 5
+  whitespace-separated fields each matching `^[*0-9/,\-]+$` or a three-letter
+  month/day name (`jan`..`dec`, `mon`..`sun`). Anything else fails. This
+  rejects `''@every 3600000ms''` before stripping and `@every 3600000ms`
+  after, so the invariant is stable in both states.
 - no job has `enabled: true` with an empty `owner_script`
 - `consecutive_errors` is not uniformly zero across the whole registry
 - every `enabled` job's `last_status` is one of the known statuses, not `None`
