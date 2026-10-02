@@ -97,7 +97,7 @@ jobs:
 
   - id: "4ee2ebc9-a517-428b-a5aa-6dfc5e85f620"
     name: "Session Converter (4h)"
-    enabled: true
+    enabled: false
     schedule_expr: "0 */4 * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -115,7 +115,7 @@ jobs:
 
   - id: "85ddfc36-4bdc-480d-a1c0-735c3f4755fa"
     name: "Session Indexer (3h)"
-    enabled: true
+    enabled: false
     schedule_expr: "30 */3 * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -133,7 +133,7 @@ jobs:
 
   - id: "5a750dfe-1e82-4575-893e-b0dfaec1344b"
     name: "Shadow Indexer (Nightly)"
-    enabled: true
+    enabled: false
     schedule_expr: "0 3 * * *"
     schedule_kind: cron
     tz: UTC
@@ -151,7 +151,7 @@ jobs:
 
   - id: "f3fefaf6-ecf8-4e9b-ba97-4282823bd22f"
     name: "opus-degradation-monitor"
-    enabled: true
+    enabled: false
     schedule_expr: "0 9 * * *"
     schedule_kind: cron
     tz: UTC
@@ -187,7 +187,7 @@ jobs:
 
   - id: "9a835351-d96c-48d8-92bc-07653c695b9f"
     name: WPP/Agency Intelligence
-    enabled: true
+    enabled: false
     schedule_expr: "0 8,20 * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -316,7 +316,7 @@ jobs:
 
   - id: "7af8a080-4313-4033-9962-32d5861d12a1"
     name: "openclaw-backup"
-    enabled: true
+    enabled: false
     schedule_expr: "@every 3600000ms"
     schedule_kind: interval
     tz: UTC
@@ -352,7 +352,7 @@ jobs:
 
   - id: "b3a48d43-30a5-4922-b504-d5f6dfa5c6a7"
     name: "openclaw-repo-digest-pm"
-    enabled: true
+    enabled: false
     schedule_expr: "30 19 * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -504,7 +504,7 @@ jobs:
 
   - id: "39cd5b40-7a63-4f91-a1d5-a635ea0312ce"
     name: BLADE WTTJ Pipeline
-    enabled: true
+    enabled: false
     schedule_expr: "0 9,15,21 * * *"
     schedule_kind: cron
     tz: UTC
@@ -542,7 +542,7 @@ jobs:
 
   - id: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"
     name: "AI News Aggregator (observer)"
-    enabled: true
+    enabled: false
     schedule_expr: "32 8,20 * * *"
     schedule_kind: cron
     tz: Europe/London

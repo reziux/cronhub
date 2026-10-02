@@ -24,3 +24,234 @@
     consecutive_errors: 0
     description: '''''''Monitors the Bluesky firehose for AI-displacement content;
       emits'
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: 4ee2ebc9-a517-428b-a5aa-6dfc5e85f620
+    name: Session Converter (4h)
+    enabled: false
+    schedule_expr: 0 */4 * * *
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: null
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: 'Job: Session Converter (4h).'
+  crontab_matches: []
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: 85ddfc36-4bdc-480d-a1c0-735c3f4755fa
+    name: Session Indexer (3h)
+    enabled: false
+    schedule_expr: 30 */3 * * *
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: null
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: 'Job: Session Indexer (3h).'
+  crontab_matches: []
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: 5a750dfe-1e82-4575-893e-b0dfaec1344b
+    name: Shadow Indexer (Nightly)
+    enabled: false
+    schedule_expr: 0 3 * * *
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: null
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: Builds a search index of conversations and memory for fast retrieval.
+  crontab_matches:
+  - '# Shadow index enrichment runs at 7am'
+  - 0 7 * * * /home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/pis-shadow-enrich.js >> /home/reziux/.openclaw/workspace/logs/pis-shadow-enrich.log 2>&1
+  - 0 */4 * * * bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/daily-shadow-index-syscron-.wrap.sh
+  - '# Shadow Index v3 - Daily pre-flight check (18:00 GMT)'
+  - 0 18 * * * bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/shadow-v3-preflight-syscron-.wrap.sh
+  - '# Shadow Index v3 - Daily summary generation (22:00 GMT)'
+  - 0 22 * * * bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/shadow-v3-summary-syscron-.wrap.sh
+  - '# DII Daily — entity extraction + daily reflection + shadow reindex (added 2026-08-05)'
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: f3fefaf6-ecf8-4e9b-ba97-4282823bd22f
+    name: opus-degradation-monitor
+    enabled: false
+    schedule_expr: 0 9 * * *
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: null
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: Monitors for Claude Opus output degradation (regressions, refusals).
+  crontab_matches: []
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: 9a835351-d96c-48d8-92bc-07653c695b9f
+    name: WPP/Agency Intelligence
+    enabled: false
+    schedule_expr: 0 8,20 * * *
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: 1538617161994739712
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: Daily WPP/agency intelligence report (24h rolling).
+  crontab_matches:
+  - '# WPP Intelligence Report - daily 08:30 Europe/London (after Burson tracker at 08:00)'
+  - 30 8 * * * /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/wpp-intelligence-syscron-.wrap.sh
+  - '# Offsets from WPP Intelligence (08:30) and Burson Tracker (08:00, 18:00) to avoid stack contention'
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: 7af8a080-4313-4033-9962-32d5861d12a1
+    name: openclaw-backup
+    enabled: false
+    schedule_expr: '@every 3600000ms'
+    schedule_kind: interval
+    tz: UTC
+    is_llm_turn: false
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: null
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: 'Periodic: snapshots the openclaw config directory.'
+  crontab_matches: []
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: b3a48d43-30a5-4922-b504-d5f6dfa5c6a7
+    name: openclaw-repo-digest-pm
+    enabled: false
+    schedule_expr: 30 19 * * *
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: 1538617880072159373
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: Daily digest of the openclaw-workspace git repo (am/pm).
+  crontab_matches: []
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: 39cd5b40-7a63-4f91-a1d5-a635ea0312ce
+    name: BLADE WTTJ Pipeline
+    enabled: false
+    schedule_expr: 0 9,15,21 * * *
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: null
+    tags: []
+    source: openclaw.cron.json
+    last_status: unknown
+    consecutive_errors: 0
+    description: BLADE ingester for Welcome to the Jungle public job board.
+  crontab_matches:
+  - '# Ashby Blade ingest - every 6 hours'
+  - 0 */6 * * * /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/blade-ingest-umbrella-syscron-.wrap.sh
+- _meta:
+    archived_at: '2026-10-02T21:00:10Z'
+    reason: registry claimed ownership (source=openclaw.cron.json) but owner_script is empty; the work runs from system cron under cronhub-wraps/*.wrap.sh
+    source: registry_repair.py ghosts pass
+    remediation: enabled=False; cron entry left untouched
+  job:
+    id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+    name: AI News Aggregator (observer)
+    enabled: false
+    schedule_expr: 32 8,20 * * *
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: true
+    owner_script: []
+    primary_executor: openclaw-cron
+    backup_executor: hermes-cron
+    fallback_strategy: skip
+    discord_channel: 1467623733345910864
+    tags: []
+    source: openclaw.cron.json
+    last_status: ok
+    consecutive_errors: 0
+    description: 'Job: AI News Aggregator (observer).'
+  crontab_matches:
+  - '# AI News Aggregator - daily 08:30 + 20:30 Europe/London (operator directive 2026-08-09)'
+  - 30 8,20 * * * bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/ai-news-aggregator-syscron-.wrap.sh
