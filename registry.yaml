@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "2026-08-21T22:57:45Z"
-updated_at: "2026-10-03T16:00:08Z"
+updated_at: "2026-10-03T17:00:10Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -292,7 +292,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "Every 6h: refreshes the local tool/inventory index."
-    last_run_at: "2026-10-03T15:30:10Z"
+    last_run_at: "2026-10-03T16:30:10Z"
 
   - id: "7b6ca6c9-683b-4b22-863c-2b6a86f10cf2"
     name: "linkedin-blade-mode"
@@ -611,7 +611,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "Bluesky capture monitor — emits the latest summary if there's new content"
-    last_run_at: "2026-10-03T16:00:06Z"
+    last_run_at: "2026-10-03T17:00:10Z"
 
   - id: 125a2c5aa052
     name: OpenRent Rental Radar
@@ -2361,7 +2361,7 @@ jobs:
     schedule_kind: cron
     tz: UTC
     is_llm_turn: false
-    owner_script: "/home/reziux/.openclaw/workspace/scripts/bluesky-cron.sh"
+    owner_script: /mnt/data/userlib/.hermes/scripts/bluesky_capture_wrapper.sh
     primary_executor: "hermes-cron"
     backup_executor: "openclaw-cron"
     fallback_strategy: "run-anyway"
@@ -2370,7 +2370,8 @@ jobs:
     source: hermes.cron.json
     log_file: "/home/reziux/.openclaw/workspace/logs/bluesky-capture.log"
     log_jobname_hint: "bluesky-capture"
-    last_status: unknown
+    last_status: ok
     consecutive_errors: 0
-    description: "Bluesky Jetstream firehose capture — WRITES capture-*.json. Paired with the read-only Bluesky AI Displacement Monitor (0ca848bdca6a). Was orphaned: present in workspace/scripts but wired to neither crontab nor registry."
+    description: "Bluesky Jetstream firehose capture -- WRITES capture-*.json. Paired with read-only monitor 0ca848bdca6a. --min-samples 2: firehose yields only 13-23 keyword-matched posts per 15-min window, so min_samples=4 makes DBSCAN structurally unreachable (needs 4 near-dup posts, only pairs exist). Was orphaned 2026-08-24..2026-10-03."
+    last_run_at: "2026-10-03T16:02:43Z"
 
