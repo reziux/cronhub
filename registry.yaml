@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "2026-08-21T22:57:45Z"
-updated_at: "2026-10-03T21:00:03Z"
+updated_at: "2026-10-03T22:00:01Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -2374,4 +2374,24 @@ jobs:
     consecutive_errors: 0
     description: "Bluesky Jetstream firehose capture -- WRITES capture-*.json. Paired with read-only monitor 0ca848bdca6a. --min-samples 2: firehose yields only 13-23 keyword-matched posts per 15-min window, so min_samples=4 makes DBSCAN structurally unreachable (needs 4 near-dup posts, only pairs exist). Was orphaned 2026-08-24..2026-10-03."
     last_run_at: "2026-10-03T16:02:43Z"
+
+  - id: d15a1ce000001
+    name: "Tier-1 Displacement Analysis"
+    enabled: true
+    schedule_expr: "23 * * * *"
+    schedule_kind: cron
+    tz: UTC
+    is_llm_turn: false
+    owner_script: "/mnt/data/userlib/.hermes/scripts/displacement-analysis.sh"
+    primary_executor: "hermes-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: [hermes, "displacement-monitor", analysis]
+    source: hermes.cron.json
+    log_file: "/home/reziux/.openclaw/workspace/logs/displacement-analysis.log"
+    log_jobname_hint: "tier1-displacement"
+    last_status: unknown
+    consecutive_errors: 0
+    description: "Frame-shift / actor-map / precarity analysis over Bluesky+Mastodon corpora. Fail-closed: runs the classifier self-test first and withholds the report if any classifier regressed. Hash-suppresses when the numbers are unchanged."
 
