@@ -70,7 +70,13 @@ EXIT_CODE=0
 cp -p "$TMP_OUT" "$DURABLE_OUT" 2>/dev/null || true
 
 END_TS=$(date +%s.%N)
-DURATION=$(awk -v s="$START_TS" -e="$END_TS" 'BEGIN{printf "%.3f", e-s}')
+# FIX (2026-10-04): this was `-e="$END_TS"`. `-e` is awk's PROGRAM text
+# flag, so mawk treated `-e=1791077042.5` as an option, printed a usage error
+# to stderr and produced EMPTY output -> DURATION="". record_run.py then
+# rejected `--duration ''` and the `ok`/`error` line was NEVER written. Every
+# job still ran correctly (stdout was durable, exit codes propagated); only
+# the run-record half of wrap.sh was silently dead since 2026-10-03 21:45.
+DURATION=$(awk -v s="$START_TS" -v e="$END_TS" 'BEGIN{printf "%.3f", e-s}')
 
 if [ "$EXIT_CODE" -eq 0 ]; then
     python3 "$CRONHUB/bin/record_run.py" "$JOB_ID" ok --duration "$DURATION" --exit 0 --output "$DURABLE_OUT"
