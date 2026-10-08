@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "2026-08-21T22:57:45Z"
-updated_at: "2026-10-08T19:00:23Z"
+updated_at: "2026-10-08T20:00:06Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -39,7 +39,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "usage-stats.sh - Parse OpenClaw session files for token usage statistics"
-    last_run_at: "2026-10-06T19:04:25Z"
+    last_run_at: "2026-10-08T19:03:03Z"
 
   - id: "35d381df-4bbe-402d-9b4f-f4ff8da6d43c"
     name: Daily Usage Stats Report
@@ -292,7 +292,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "Every 6h: refreshes the local tool/inventory index."
-    last_run_at: "2026-10-08T19:00:23Z"
+    last_run_at: "2026-10-08T19:30:18Z"
 
   - id: "7b6ca6c9-683b-4b22-863c-2b6a86f10cf2"
     name: "linkedin-blade-mode"
