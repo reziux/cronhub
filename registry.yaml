@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "2026-08-21T22:57:45Z"
-updated_at: "2026-10-09T19:00:17Z"
+updated_at: "2026-10-09T20:00:10Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -39,7 +39,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "usage-stats.sh - Parse OpenClaw session files for token usage statistics"
-    last_run_at: "2026-10-08T19:03:03Z"
+    last_run_at: "2026-10-09T19:03:32Z"
 
   - id: "35d381df-4bbe-402d-9b4f-f4ff8da6d43c"
     name: Daily Usage Stats Report
@@ -292,7 +292,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "Every 6h: refreshes the local tool/inventory index."
-    last_run_at: "2026-10-09T19:00:17Z"
+    last_run_at: "2026-10-09T20:00:10Z"
 
   - id: "7b6ca6c9-683b-4b22-863c-2b6a86f10cf2"
     name: "linkedin-blade-mode"
@@ -2394,4 +2394,21 @@ jobs:
     last_status: unknown
     consecutive_errors: 0
     description: "Frame-shift / actor-map / precarity analysis over Bluesky+Mastodon corpora. Fail-closed: runs the classifier self-test first and withholds the report if any classifier regressed. Hash-suppresses when the numbers are unchanged."
+
+  - id: "syscron-6390dfdb"
+    name: python3
+    enabled: true
+    schedule_expr: "*/1 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/usr/bin/python3 /home/reziux/cronhub-dashboard/bin/host-sampler.py >/dev/null 2>&1 # cronhub: host metric sampler"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
 
