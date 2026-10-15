@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "2026-08-21T22:57:45Z"
-updated_at: "2026-10-15T19:00:03Z"
+updated_at: "2026-10-15T21:00:27Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -292,7 +292,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "Every 6h: refreshes the local tool/inventory index."
-    last_run_at: "2026-10-15T18:30:10Z"
+    last_run_at: "2026-10-15T21:00:27Z"
 
   - id: "7b6ca6c9-683b-4b22-863c-2b6a86f10cf2"
     name: "linkedin-blade-mode"
@@ -2403,6 +2403,91 @@ jobs:
     tz: Europe/London
     is_llm_turn: false
     owner_script: "/usr/bin/python3 /home/reziux/cronhub-dashboard/bin/host-sampler.py >/dev/null 2>&1 # cronhub: host metric sampler"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-244fa892"
+    name: "pis-full-sync.js"
+    enabled: true
+    schedule_expr: "0 6,18 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/pis-full-sync.js >> /home/reziux/.openclaw/workspace/logs/pis-full-sync.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-48b285cd"
+    name: "pis-shadow-enrich.js"
+    enabled: true
+    schedule_expr: "0 7 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/reziux/.local/bin/node /home/reziux/.openclaw/workspace/scripts/pis-shadow-enrich.js >> /home/reziux/.openclaw/workspace/logs/pis-shadow-enrich.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-09f234dc"
+    name: "collapse-manifest-builder.js"
+    enabled: true
+    schedule_expr: "0 5 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/home/linuxbrew/.linuxbrew/bin/node /home/reziux/.openclaw/workspace/scripts/collapse-manifest-builder.js --start-date=$(date +\\%Y-\\%m-\\%d) --end-date=$(date +\\%Y-\\%m-\\%d) >> /home/reziux/.openclaw/workspace/logs/collapse-manifest.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-72ad5cd2"
+    name: "github-state-sync.sh"
+    enabled: true
+    schedule_expr: "0 */4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "/bin/bash /home/reziux/.openclaw/workspace/scripts/github-state-sync.sh >> /home/reziux/.openclaw/workspace/logs/github-sync.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-bf3d73e5"
+    name: "verify-backups.sh"
+    enabled: true
+    schedule_expr: "30 4 * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/verify-backups.sh >> /home/reziux/.openclaw/workspace/logs/verify-backups-cron.log 2>&1"
     primary_executor: "system-cron"
     backup_executor: "openclaw-cron"
     fallback_strategy: "run-anyway"
