@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "2026-08-21T22:57:45Z"
-updated_at: "2026-10-16T22:00:10Z"
+updated_at: "2026-10-16T22:00:22Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -292,7 +292,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "Every 6h: refreshes the local tool/inventory index."
-    last_run_at: "2026-10-16T21:30:27Z"
+    last_run_at: "2026-10-16T22:00:22Z"
 
   - id: "7b6ca6c9-683b-4b22-863c-2b6a86f10cf2"
     name: "linkedin-blade-mode"
@@ -908,7 +908,7 @@ jobs:
 
   - id: "syscron-6e1d4cc9"
     name: Shadow v3 Preflight
-    enabled: true
+    enabled: false
     schedule_expr: "0 18 * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -928,7 +928,7 @@ jobs:
 
   - id: "syscron-dc68be9d"
     name: Shadow v3 Summary
-    enabled: true
+    enabled: false
     schedule_expr: "0 22 * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -1051,7 +1051,7 @@ jobs:
     schedule_kind: cron
     tz: Europe/London
     is_llm_turn: false
-    owner_script: "/home/reziux/.openclaw/workspace/scripts/blade-ingest-all.sh >> /home/reziux/.openclaw/workspace/logs/blade-ingest-all.log"
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/blade-ingest-all.sh"
     primary_executor: "system-cron"
     backup_executor: "openclaw-cron"
     fallback_strategy: "run-anyway"
@@ -1061,6 +1061,7 @@ jobs:
     last_status: None
     consecutive_errors: 0
     description: "Umbrella: runs all BLADE source ingesters (workable, ashby, himalayas,"
+    log_file: "/home/reziux/.openclaw/workspace/logs/blade-ingest-all.log"
 
   - id: "syscron-ec1a4337"
     name: "Hourly Backup (All Repos)"
@@ -1707,7 +1708,7 @@ jobs:
 
   - id: "syscron-a865da5c"
     name: "shadow-v3-preflight-syscron-.wrap.sh"
-    enabled: true
+    enabled: false
     schedule_expr: "0 18 * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -1724,7 +1725,7 @@ jobs:
 
   - id: "syscron-a76d8fab"
     name: "shadow-v3-summary-syscron-.wrap.sh"
-    enabled: true
+    enabled: false
     schedule_expr: "0 22 * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -2149,7 +2150,7 @@ jobs:
 
   - id: "syscron-84affc8d"
     name: arbiter.sh
-    enabled: true
+    enabled: false
     schedule_expr: "* * * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -2166,7 +2167,7 @@ jobs:
 
   - id: "syscron-155f6594"
     name: "cronhub-auditor.sh"
-    enabled: true
+    enabled: false
     schedule_expr: "*/30 * * * *"
     schedule_kind: cron
     tz: Europe/London
@@ -2256,7 +2257,7 @@ jobs:
     schedule_kind: cron
     tz: Europe/London
     is_llm_turn: true
-    owner_script: "bash /home/reziux/.openclaw/workspace/scripts/cronhub-wraps/minimax-m31-monitor-syscron-.wrap.sh"
+    owner_script: "/home/reziux/.openclaw/workspace/scripts/cron-minimax-m31-monitor.sh"
     primary_executor: "system-cron"
     backup_executor: "openclaw-cron"
     fallback_strategy: "run-anyway"
@@ -2267,7 +2268,7 @@ jobs:
     consecutive_errors: 0
     description: "Monitors DDG-indexable sources (news, blogs, YouTube, HF, Reddit)"
     log_jobname_hint: "minimax-m31-monitor"
-    log_file: "/home/reziux/.openclaw/workspace/data/minimax-monitor/cron.log"
+    log_file: "/home/reziux/.openclaw/workspace/data/minimax-monitor/logs/cron.log"
 
   - id: "syscron-8c7e403f"
     name: "minimax-m31-monitor-syscron-.wrap.sh"
