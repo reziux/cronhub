@@ -7,6 +7,7 @@ cd "$(dirname "$0")" || exit 2
 
 SUITES=(
     "python3 test_yaml_io_strict.py"
+    "python3 -m unittest test_sync_openclaw_jobs.py -v"
     "bash test_openclaw_heartbeat.sh"
     "bash test_wrap_duration.sh"
     "node /home/reziux/.openclaw/workspace/scripts/test_memory_consolidator_race.js"
@@ -22,8 +23,10 @@ for t in "${SUITES[@]}"; do
     # result here, not an error — hence the `|| true` and the string test.)
     summary=$(printf '%s' "$out" | grep -E '^passed:' | tail -1 || true)
     if [ -z "$summary" ]; then
-        ok=$(printf '%s' "$out" | grep -cE '^  ok ' || true)
-        bad=$(printf '%s' "$out" | grep -cE '^  FAIL' || true)
+        # Two on-disk suites emit `  ok ...` / `  FAIL ...` (2-space indent).
+        # `python3 -m unittest` emits `<name> ... ok` / `... FAIL`. Match both.
+        ok=$(printf '%s' "$out" | grep -cE '^  ok | \.\.\. ok$' || true)
+        bad=$(printf '%s' "$out" | grep -cE '^  FAIL| \.\.\. FAIL' || true)
         summary="passed: $ok  failed: $bad"
     fi
     printf '%-58s rc=%d  %s\n' "$t" "$rc" "$summary"
