@@ -1,7 +1,7 @@
 version: 1
 active_scheduler: openclaw
 active_updated_at: "2026-08-21T22:57:45Z"
-updated_at: "2026-10-16T22:00:22Z"
+updated_at: "2026-10-16T23:00:10Z"
 jobs:
   - id: "636878a8-bee6-4019-b6e1-a0c50f7b2c84"
     name: Cron Deduplicator
@@ -292,7 +292,7 @@ jobs:
     last_status: ok
     consecutive_errors: 0
     description: "Every 6h: refreshes the local tool/inventory index."
-    last_run_at: "2026-10-16T22:00:22Z"
+    last_run_at: "2026-10-16T22:30:17Z"
 
   - id: "7b6ca6c9-683b-4b22-863c-2b6a86f10cf2"
     name: "linkedin-blade-mode"
@@ -2489,6 +2489,23 @@ jobs:
     tz: Europe/London
     is_llm_turn: false
     owner_script: "bash /home/reziux/.openclaw/workspace/scripts/verify-backups.sh >> /home/reziux/.openclaw/workspace/logs/verify-backups-cron.log 2>&1"
+    primary_executor: "system-cron"
+    backup_executor: "openclaw-cron"
+    fallback_strategy: "run-anyway"
+    discord_channel: null
+    tags: ["system-cron", "live-crontab"]
+    source: user.crontab
+    last_status: null
+    consecutive_errors: 0
+
+  - id: "syscron-147a4743"
+    name: "auditor-cron.log"
+    enabled: true
+    schedule_expr: "*/30 * * * *"
+    schedule_kind: cron
+    tz: Europe/London
+    is_llm_turn: false
+    owner_script: "bash /mnt/data/cronhub/bin/cronhub-record.sh crh-auditor-full -- bash /mnt/data/cronhub/bin/cronhub-auditor.sh >> /mnt/data/cronhub/audits/auditor-cron.log 2>&1"
     primary_executor: "system-cron"
     backup_executor: "openclaw-cron"
     fallback_strategy: "run-anyway"
